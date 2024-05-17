@@ -8,14 +8,35 @@ export default new Router({
   mode:"history",
   routes: [
     {
-      path: '/h',
-      name: 'HelloWorld',
-      component: ()=>import('@/components/HelloWorld')
+      path: '/',
+      name: 'UserIndex',
+      component: ()=>import('@/components/UserIndex')
     },
     {
-      path: '/',
-      name: 'login',
-      component: ()=>import('@/components/login')
-    }
+      path: '/UserLogin',
+      name: 'UserLogin',
+      component: ()=>import('@/components/UserLogin')
+    },
+    {
+      path: '/AdminHomePage',
+      name: 'AdminHomePage',
+      component: ()=>import('@/components/HomePage/AdminHomePage')
+    },
+    {
+      path: '/SchoolHomePage',
+      name: 'SchoolHomePage',
+      component: ()=>import('@/components/HomePage/SchoolHomePage')
+    },
+    {
+      path: '/StuHomePage',
+      name: 'StuHomePage',
+      component: ()=>import('@/components/HomePage/StuHomePage')
+    },
+    {
+      path: '/StuHomePage/SelfMsg',
+      name: 'StuSelfMsg',
+      component: ()=>import('@/components/StuMainPanel/SelfMsg')
+    },
+
   ]
 })
