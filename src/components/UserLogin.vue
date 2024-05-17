@@ -4,7 +4,8 @@
 
     <el-main class="my-el-main">
       <el-container>
-        <el-aside width="35%">
+<!--        登录界面-->
+        <el-aside v-if="!registerStatus" width="35%">
           <el-card class="box-card" style="background: rgba(255, 255, 255, 0.8); padding: 65px;">
             <div slot="header" class="clearfix">
               <span>{{role}}登录</span>
@@ -18,13 +19,40 @@
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                <el-button type="primary" @click="submitForm('loginForm')">注册</el-button>
+                <el-button type="primary" v-if="role==='学生'" @click="registerStatusInvert">去注册</el-button>
               </el-form-item>
             </el-form>
           </el-card>
 
         </el-aside>
+<!--        注册界面-->
+        <el-aside v-if="registerStatus" width="35%">
+          <el-card class="box-card" style="background: rgba(255, 255, 255, 0.8); padding: 65px;">
+            <div slot="header" class="clearfix">
+              <span>{{role}}注册</span>
+            </div>
+<!--            注册信息填写表单-->
+            <el-form :model="registerForm" :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
+              <el-form-item label="身份证号" prop="username">
+                <el-input v-model="registerForm.idCard"></el-input>
+              </el-form-item>
+              <el-form-item label="真实姓名" prop="username">
+                <el-input v-model="registerForm.stuName"></el-input>
+              </el-form-item>
+              <el-form-item label="密码" prop="password">
+                <el-input type="password" v-model="registerForm.stuPassword"></el-input>
+              </el-form-item>
+              <el-form-item label="当前学校" prop="username">
+                <el-input v-model="registerForm.schoolName"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" v-if="role==='学生'" @click="submitForm('registerForm')">注册</el-button>
+                <el-button type="primary" @click="registerStatusInvert">返回登录</el-button>
+              </el-form-item>
+            </el-form>
+          </el-card>
 
+        </el-aside>
       </el-container>
 
     </el-main>
@@ -36,10 +64,19 @@
   export default {
     data() {
       return {
+        // 不同入口进入的身份--学生、学校、管理员
         role: this.params,
+        // 控制登录和注册界面的显示
+        registerStatus:false,
         loginForm: {
           username: '',
           password: ''
+        },
+        registerForm:{
+          idCard: "",
+          stuName: "",
+          stuPassword: "",
+          schoolName: ""
         },
         rules: {
           username: [{
@@ -57,10 +94,31 @@
     },
     methods: {
       submitForm(formName) {
-        // this.$axios({
-        //   method:,
-        //   url:,
-        // })
+        console.log(this[formName])
+        //登录
+        if (formName == "loginForm"){
+          console.log("loginSubmit")
+          this.$axios({
+            method:"post",
+            url: "/login",
+            data:JSON.stringify(this[formName])
+          }).then(res=>{
+            console.log(res)
+          })
+        }
+        //注册
+        else if (formName == "registerForm"){
+          // this.$axios({
+          //   method:,
+          //   url:,
+          // })
+        }
+
+
+
+      },
+      registerStatusInvert(){
+        this.registerStatus = !this.registerStatus
       }
     },
     created() {

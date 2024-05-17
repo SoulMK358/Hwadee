@@ -23,8 +23,8 @@
       <el-header style="text-align: right; font-size: 12px">
         <el-button type="primary" @click="goToGoodShow" icon="el-icon-sort">回到商城</el-button>
         <el-button type="primary" icon="el-icon-switch-button" @click="exit">退出系统</el-button>
-        <span style="text-align: left">　　　当前身份：{{user.role}}</span>
-        <span>用户名：{{ user.userName }}</span>
+        <span style="text-align: left">　　　当前身份：{{ Stu.role }}</span>
+        <span>用户名：{{ Stu.userName }}</span>
       </el-header>
 
       <el-main>
@@ -40,12 +40,12 @@ export default {
   name: "StuHomePage",
   data() {
     return {
-      user:{
+      Stu:{
         userId:'',
         userName: "xxxxx",
-        userEmail:"",
-        roleId:'',
-        role:"xxx"
+        realName:"",
+        school:'',
+        aimSchool:"xxx"
       },
 
       url: "",
@@ -89,7 +89,6 @@ export default {
 
   methods: {
     openUrl(url) {
-      // console.log(url)
       this.url = url
     }
   },
