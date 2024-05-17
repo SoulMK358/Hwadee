@@ -5,7 +5,7 @@
       <el-container>
 
       <!--登录界面-->
-        <el-aside v-if="!registerStatus" width="35%">
+        <el-aside v-if="!registerStatus" width="40%">
           <el-card class="el-card2">
 
             <div slot="header" class="el-login">
@@ -14,17 +14,17 @@
             <br />
             <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="51px">
 
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="loginForm.idCard"></el-input>
+              <el-form-item label="账号" prop="username">
+                <el-input v-model="loginForm.idCard" placeholder="请输入账号"></el-input>
               </el-form-item>
               <br />
               <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="loginForm.stuPassword"></el-input>
+                <el-input type="password" v-model="loginForm.stuPassword" placeholder="请输入密码"></el-input>
               </el-form-item>
               <br />
-              <el-form-item label-width="2px">
+              <el-form-item label-width="4px">
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                
                 <el-button type="primary" v-if="role=='学生'" @click="registerStatusInvert">注册</el-button>
               </el-form-item>
 
