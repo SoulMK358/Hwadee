@@ -1,54 +1,69 @@
 <template>
   <el-container>
-    <el-header>引导栏内容</el-header>
 
     <el-main class="my-el-main">
       <el-container>
-<!--        登录界面-->
+
+      <!--登录界面-->
         <el-aside v-if="!registerStatus" width="35%">
-          <el-card class="box-card" style="background: rgba(255, 255, 255, 0.8); padding: 65px;">
-            <div slot="header" class="clearfix">
+          <el-card class="el-card2">
+
+            <div slot="header" class="el-login">
               <span>{{role}}登录</span>
             </div>
-            <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
-              <el-form-item label="用户名" prop="username">
-                <el-input v-model="loginForm.username"></el-input>
+            <br />
+            <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="51px">
+
+              <el-form-item label="账号" prop="username">
+                <el-input v-model="loginForm.username" placeholder="请输入账号"></el-input>
               </el-form-item>
+              <br />
               <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="loginForm.password"></el-input>
+                <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
               </el-form-item>
-              <el-form-item>
+              <br />
+              <el-form-item label-width="2px">
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                <el-button type="primary" v-if="role==='学生'" @click="registerStatusInvert">去注册</el-button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-button type="primary" v-if="role=='学生'" @click="registerStatusInvert">注册</el-button>
               </el-form-item>
+
             </el-form>
+
           </el-card>
 
         </el-aside>
-<!--        注册界面-->
+
+        <!--注册界面-->
         <el-aside v-if="registerStatus" width="35%">
-          <el-card class="box-card" style="background: rgba(255, 255, 255, 0.8); padding: 65px;">
-            <div slot="header" class="clearfix">
+          <el-card class="el-card">
+            <div slot="header" class="el-login">
               <span>{{role}}注册</span>
             </div>
-<!--            注册信息填写表单-->
-            <el-form :model="registerForm" :rules="rules" ref="loginForm" label-width="100px" class="demo-ruleForm">
-              <el-form-item label="身份证号" prop="username">
-                <el-input v-model="registerForm.idCard"></el-input>
+        <!--注册信息填写表单-->
+            <el-form :model="registerForm" :rules="rules" ref="loginForm" label-width="79px" class="demo-ruleForm">
+              <el-form-item label="身份证号" prop="username" >
+                <el-input v-model="registerForm.idCard" placeholder="请输入身份证号"></el-input>
               </el-form-item>
               <el-form-item label="真实姓名" prop="username">
-                <el-input v-model="registerForm.stuName"></el-input>
+                <el-input v-model="registerForm.stuName" placeholder="请输入真实姓名"></el-input>
               </el-form-item>
               <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="registerForm.stuPassword"></el-input>
+                <el-input type="password" v-model="registerForm.stuPassword" placeholder="请输入密码"></el-input>
+              </el-form-item>
+              <el-form-item label="确认密码" prop="password">
+                <el-input type="password" v-model="registerForm.stuConfirmPassword" placeholder="请确认密码"></el-input>
               </el-form-item>
               <el-form-item label="当前学校" prop="username">
-                <el-input v-model="registerForm.schoolName"></el-input>
+                <el-input v-model="registerForm.schoolName" placeholder="请输入当前学校"></el-input>
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" v-if="role==='学生'" @click="submitForm('registerForm')">注册</el-button>
-                <el-button type="primary" @click="registerStatusInvert">返回登录</el-button>
+
+              <el-form-item label-width="1px">
+                <el-button type="primary" @click="submitForm('registerForm')">注册</el-button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-button type="primary" @click="registerStatusInvert" style="text-align=center">返回登录</el-button>
               </el-form-item>
+
             </el-form>
           </el-card>
 
@@ -56,7 +71,7 @@
       </el-container>
 
     </el-main>
-    <el-footer>123</el-footer>
+
   </el-container>
 </template>
 
@@ -76,6 +91,7 @@
           idCard: "",
           stuName: "",
           stuPassword: "",
+          stuConfirmPassword: "",
           schoolName: ""
         },
         rules: {
@@ -129,38 +145,54 @@
 </script>
 
 <style scoped>
-.my-el-main{
-  height: 570px;
-  background-image: url("../assets/用户登陆页面.png");
-  /* 背景图垂直、水平均居中 */
-  background-position: center center;
-  /* 背景图不平铺 */
-  background-repeat: no-repeat;
-  /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
-  background-attachment: fixed;
-  /* 让背景图基于容器大小伸缩 */
-  background-size: cover;
-  /* 设置背景颜色，背景图加载过程中会显示背景色 */
-  background-color: #464646;
-}
-  .el-header,
-  .el-footer {
-    background-color: #b3c0d1;
-    line-height: 60px;
-    padding: 0 20px;
+  .my-el-main{
+    /* 设置高度为视口高度 */
+    height: 100vh;
+    /* 设置宽度为100% */
+    width: 100%;
+    /* 背景图片 */
+    background-image: url("../assets/用户登陆页面.png");
+    /* 背景图垂直、水平均居中 */
+    background-position: center center;
+    /* 背景图不平铺 */
+    background-repeat: no-repeat;
+    /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+    background-attachment: fixed;
+    /* 让背景图基于容器大小伸缩，并填满容器 */
+    background-size: cover;
   }
 
   .el-aside {
-    background-color: #d3dce6;
     text-align: center;
+    position: relative;
+    top:  70px;
+    left: 160px;
   }
 
   .el-main {
-    background-color: #e9ecef;
-    padding: 20px;
+    /* background-color: #e9ecef; */
+    /* padding: 20px; */
   }
 
-  .box-card {
-    width: 340px;
+  .el-card {
+    background: rgb(247,250,255);
+    padding: 30px;
+    width: 320px;
+    height: 430px;
   }
+
+  .el-card2 {
+    background: rgb(247,250,255);
+    padding: 30px;
+    width: 300px;
+    height: 310px;
+  }
+
+  .el-login {
+    font-size: 30px;
+    font-weight: bold;
+    font-family: cursive;
+    font-style: italic;
+  }
+
 </style>
