@@ -18,7 +18,7 @@ const versionRequirements = [
 
 if (shell.which('npm')) {
   versionRequirements.push({
-    name: 'npm',
+    schoolName: 'npm',
     currentVersion: exec('npm --version'),
     versionRequirement: packageConfig.engines.npm
   })

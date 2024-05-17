@@ -9,32 +9,32 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'UserIndex',
+      schoolName: 'UserIndex',
       component: ()=>import('@/components/UserIndex')
     },
     {
       path: '/UserLogin',
-      name: 'UserLogin',
+      schoolName: 'UserLogin',
       component: ()=>import('@/components/UserLogin')
     },
     {
       path: '/AdminHomePage',
-      name: 'AdminHomePage',
+      schoolName: 'AdminHomePage',
       component: ()=>import('@/components/HomePage/AdminHomePage')
     },
     {
       path: '/SchoolHomePage',
-      name: 'SchoolHomePage',
+      schoolName: 'SchoolHomePage',
       component: ()=>import('@/components/HomePage/SchoolHomePage')
     },
     {
       path: '/StuHomePage',
-      name: 'StuHomePage',
+      schoolName: 'StuHomePage',
       component: ()=>import('@/components/HomePage/StuHomePage')
     },
     {
       path: '/StuHomePage/SelfMsg',
-      name: 'StuSelfMsg',
+      schoolName: 'StuSelfMsg',
       component: ()=>import('@/components/StuMainPanel/SelfMsg')
     },
 
