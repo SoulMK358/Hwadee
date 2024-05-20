@@ -24,7 +24,7 @@
               <br />
               <el-form-item label-width="4px">
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                
+
                 <el-button type="primary" v-if="role=='学生'" @click="registerStatusInvert">注册</el-button>
               </el-form-item>
 
@@ -63,7 +63,7 @@
               <el-form-item label-width="1px">
                 <el-button type="primary" @click="submitForm('registerForm')">注册</el-button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-button type="primary" @click="registerStatusInvert" style="text-align=center">返回登录</el-button>
+                <el-button type="primary" @click="registerStatusInvert" style="text-align:center;">返回登录</el-button>
               </el-form-item>
 
             </el-form>
@@ -96,16 +96,16 @@
           schoolName: "二仙桥职业学院"
         },
         rules: {
-          username: [{
-            required: true,
-            message: '请输入用户名',
-            trigger: 'blur'
-          }],
-          password: [{
-            required: true,
-            message: '请输入密码',
-            trigger: 'blur'
-          }]
+          // username: [{
+          //   required: true,
+          //   message: '请输入用户名',
+          //   trigger: 'blur'
+          // }],
+          // password: [{
+          //   required: true,
+          //   message: '请输入密码',
+          //   trigger: 'blur'
+          // }]
         },
 
         selectedSchoolId:'',
