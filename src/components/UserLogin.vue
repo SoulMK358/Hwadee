@@ -140,6 +140,7 @@
           }]
       };
     },
+
     methods: {
       //提交表单（登录/注册）
       submitForm(formName) {
