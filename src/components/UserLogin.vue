@@ -14,17 +14,18 @@
             <br />
             <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="51px">
 
-              <el-form-item label="账号" prop="username">
-                <el-input v-model="loginForm.idCard" placeholder="请输入账号"></el-input>
+              <el-form-item label="账号" prop="idCard">
+                <el-input v-model="loginForm.idCard" placeholder="请输入身份证号"></el-input>
               </el-form-item>
               <br />
-              <el-form-item label="密码" prop="password">
+              <el-form-item label="密码">
                 <el-input type="password" v-model="loginForm.stuPassword" placeholder="请输入密码"></el-input>
               </el-form-item>
               <br />
               <el-form-item label-width="4px">
+<!--                点击后触发submit登录函数，提交表格信息-->
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-
+<!--                点击显示注册页面，登录界面隐藏-->
                 <el-button type="primary" v-if="role=='学生'" @click="registerStatusInvert">注册</el-button>
               </el-form-item>
 
@@ -42,19 +43,19 @@
             </div>
         <!--注册信息填写表单-->
             <el-form :model="registerForm" :rules="rules" ref="loginForm" label-width="79px" class="demo-ruleForm">
-              <el-form-item label="身份证号" prop="username" >
+              <el-form-item label="身份证号" prop="idCard" >
                 <el-input v-model="registerForm.idCard" placeholder="请输入身份证号"></el-input>
               </el-form-item>
-              <el-form-item label="真实姓名" prop="username">
+              <el-form-item label="真实姓名" prop="realName">
                 <el-input v-model="registerForm.stuName" placeholder="请输入真实姓名"></el-input>
               </el-form-item>
-              <el-form-item label="密码" prop="password">
+              <el-form-item label="密码" prop="passwordRegister">
                 <el-input type="password" v-model="registerForm.stuPassword" placeholder="请输入密码"></el-input>
               </el-form-item>
-              <el-form-item label="确认密码" prop="password">
-                <el-input type="password" v-model="registerForm.stuConfirmPassword" placeholder="请确认密码"></el-input>
+              <el-form-item label="确认密码" prop="passwordConfirm">
+                <el-input type="password" v-model="registerForm.stuConfirmPassword" @blur="passwordConfirm" placeholder="请确认密码"></el-input>
               </el-form-item>
-              <el-form-item label="当前学校" prop="username">
+              <el-form-item label="当前学校">
                 <el-select v-model="selectedSchoolId" placeholder="请选择学校">
                   <el-option v-for="school in schools" :label="school.schoolName" :value="school.schoolId" :key="school.schoolId"></el-option>
                 </el-select>
@@ -85,31 +86,51 @@
         role: this.params,
         // 控制登录和注册界面的显示
         registerStatus:false,
+        //登录人员信息
         loginForm: {
           idCard: '',
           stuPassword: ''
         },
+        //学生注册信息表
         registerForm:{
           idCard: "1234444",
           stuName: "水水水",
           stuPassword: "123",
+          stuConfirmPassword: "123",
           schoolName: "二仙桥职业学院"
         },
+        //表单验证规则
         rules: {
-          // username: [{
-          //   required: true,
-          //   message: '请输入用户名',
-          //   trigger: 'blur'
-          // }],
-          // password: [{
-          //   required: true,
-          //   message: '请输入密码',
-          //   trigger: 'blur'
-          // }]
+          //身份证
+          idCard:[{
+            pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,//身份证正则验证
+            required: true,
+            message: "请填写正确的身份证号",
+            trigger: "blur"
+          }],
+          //注册界面密码判断
+          passwordRegister:[{
+            //密码验证，6-20位英文字母、数字或者符号（除空格），且字母、数字和标点符号至少包含两种
+            pattern:/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)([^\u4e00-\u9fa5\s]){6,20}$/,
+            required: true,
+            message: '6-20位英文、数字或者符号（除空格）且至少包含两种不同类型',
+            trigger: 'blur'
+          }],
+          //注册界面姓名判断
+          realName: [{
+            //中文真实名字
+            pattern:/^[\u0391-\uFFE5A-Za-z]+$/,
+            required: true,
+            message: '请输入真实姓名',
+            trigger: 'blur'
+          }]
         },
 
+        //选择的学校在后台的id
         selectedSchoolId:'',
-        schools: [{
+        //从后台拉取学校信息的临时表格
+        schools: [
+          {
           schoolId: 1,
           schoolName: '二仙桥职业学院'
         },
@@ -123,32 +144,51 @@
       //提交表单（登录/注册）
       submitForm(formName) {
         console.log(this[formName])
+        //防止axios返回then函数中this被覆盖
         var _this = this
-        //登录
-        if (formName == "loginForm"){
-          console.log("loginSubmit")
+        //学生登录
+        if (formName == "loginForm" && _this.role=="学生"){
+          console.log("Stu loginSubmit")
+          //向后端发送登录人员信息表格
           this.$axios({
             method:"post",
-            url: "/login",
+            url: "/studentLogin",
             data:JSON.stringify(this[formName])
           }).then(res=>{
             console.log(res)
+            //弹窗显示后端返回的信息（成功、失败原因）
+            _this.$message({
+              type: res.data.code == 200 ? "success" : "error",
+              message: res.data.message
+            })
+
 
             //登录成功，跳转界面
             if (res.data.code == 200){
-              _this.$router.push("/StuHomePage")
+              setTimeout(function (){
+                //保存当前用户的个人相关信息，以便后续使用
+                localStorage.setItem("currentUser",JSON.stringify(res.data.data))
+                _this.$router.push("/StuHomePage")
+              },800)
             }
           })
         }
         //注册
         else if (formName == "registerForm"){
           console.log("registerSubmit")
+          //向后端发送注册人员信息表格
           this.$axios({
             method:"post",
             url: "/register",
             data:JSON.stringify(this[formName])
           }).then(res=>{
             console.log(res)
+            //弹窗显示后端返回的信息（成功、失败原因）
+            _this.$message({
+              type: res.data.code == 200 ? "success" : "error",
+              message: res.data.data
+            })
+
           })
         }
 
@@ -176,7 +216,17 @@
           _this.schools = result
           console.log(_this.schools)
         })
+      },
+      //确认密码栏验证
+      passwordConfirm(){
+        if (this.registerForm.stuPassword != this.registerForm.stuConfirmPassword){
+            this.$message({
+              type: "error",
+              message: "密码不一致，请再次确认"
+            })
+        }
       }
+
 
     },
     mounted() {
