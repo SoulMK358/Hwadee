@@ -17,19 +17,21 @@
         <el-menu-item @click="openUrl('/StuHomePage/SelfMsg')" style="padding-left: 60px;"
                       class="el-icon-user-solid">个人信息
         </el-menu-item>
+        <el-menu-item @click="openUrl('/StuHomePage/SelfEnroll')" style="padding-left: 60px;"
+                      class="el-icon-user-solid">个人报考
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
-        <el-button type="primary" @click="goToGoodShow" icon="el-icon-sort">回到商城</el-button>
         <el-button type="primary" icon="el-icon-switch-button" @click="exit">退出系统</el-button>
         <span style="text-align: left">　　　当前身份：{{ Stu.role }}</span>
         <span>用户名：{{ Stu.userName }}</span>
       </el-header>
 
       <el-main>
-        <iframe class="myIfame" scrolling="auto" :src="url" name="right" width="100%"
-                height="100%"></iframe>
+        <iframe class="myIfame" scrolling="auto" :src="url" name="right" width="99%"
+                height="98%"></iframe>
       </el-main>
     </el-container>
   </el-container>
