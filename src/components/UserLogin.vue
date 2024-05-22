@@ -148,32 +148,40 @@
         //防止axios返回then函数中this被覆盖
         var _this = this
         //学生登录
-        if (formName == "loginForm" && _this.role=="学生"){
-          console.log("Stu loginSubmit")
-          //向后端发送登录人员信息表格
-          this.$axios({
-            method:"post",
-            url: "/studentLogin",
-            data:JSON.stringify(this[formName])
-          }).then(res=>{
-            console.log(res)
-            //弹窗显示后端返回的信息（成功、失败原因）
-            _this.$message({
-              type: res.data.code == 200 ? "success" : "error",
-              message: res.data.message
-            })
+        if (formName == "loginForm"){
+          if(_this.role=="学生"){
+            this.$router.push("/StuHomePage")
+            // console.log("Stu loginSubmit")
+            // //向后端发送登录人员信息表格
+            // this.$axios({
+            //   method:"post",
+            //   url: "/studentLogin",
+            //   data:JSON.stringify(this[formName])
+            // }).then(res=>{
+            //   console.log(res)
+            //   //弹窗显示后端返回的信息（成功、失败原因）
+            //   _this.$message({
+            //     type: res.data.code == 200 ? "success" : "error",
+            //     message: res.data.message
+            //   })
 
 
-            //登录成功，跳转界面
-            if (res.data.code == 200){
-              setTimeout(function (){
-                //保存当前用户的个人相关信息，以便后续使用
-                localStorage.setItem("currentUser",JSON.stringify(res.data.data))
-                _this.$router.push("/StuHomePage")
-              },800)
-            }
-          })
+            //   //登录成功，跳转界面
+            //   if (res.data.code == 200){
+            //     setTimeout(function (){
+            //       //保存当前用户的个人相关信息，以便后续使用
+            //       localStorage.setItem("currentUser",JSON.stringify(res.data.data))
+            //       _this.$router.push("/StuHomePage")
+            //     },800)
+            //   }
+            // })
+          } else if(_this.role=="院校"){
+            this.$router.push('/SchoolHomePage')
+          } else if(_this.role=="管理员"){
+            this.$router.push('/AdminHomePage')
+          }
         }
+
         //注册
         else if (formName == "registerForm"){
           console.log("registerSubmit")
@@ -192,9 +200,6 @@
 
           })
         }
-
-
-
       },
       //切换登录注册页面
       registerStatusInvert(){
