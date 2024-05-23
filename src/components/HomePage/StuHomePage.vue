@@ -92,6 +92,16 @@ export default {
   methods: {
     openUrl(url) {
       this.url = url
+    },
+    exit(){
+      this.$message({
+        type:"success",
+        message:"正在退出..."
+      })
+      setTimeout(function (){
+        localStorage.removeItem("currentUser")
+        this.$router.push("/")
+      },500)
     }
   },
 }

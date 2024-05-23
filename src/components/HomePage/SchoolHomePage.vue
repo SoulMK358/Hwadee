@@ -8,13 +8,13 @@
             <i class="el-icon-menu"></i>
           </el-menu-item>
          <el-menu-item index="1" style="color: white;">
-            <i class="el-icon-document"></i> 集体信息
+            <i class="el-icon-document"></i> <span>学校信息</span>
           </el-menu-item>
           <el-menu-item index="2" style="color: white;">
-            <i class="el-icon-edit"></i> 集体报考
+            <i class="el-icon-edit"></i> <span>批量报考</span>
           </el-menu-item>
           <el-menu-item index="3" style="color: white;">
-            <i class="el-icon-location"></i> 报名报考
+            <i class="el-icon-location"></i><span>创建考试</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

@@ -46,7 +46,9 @@ export default {
   data() {
     return {
       activeIndex: '1',
-      currentComponent: 'MarshallingPageVue'
+      currentComponent: 'MarshallingPageVue',
+      //用户名
+      userName:'xxx'
     };
   },
   components: {
@@ -67,6 +69,10 @@ export default {
         this.currentComponent = 'ViolationPageVue';
       }
     }
+  },
+  mounted() {
+
+
   }
 }
 </script>

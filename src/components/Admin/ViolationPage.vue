@@ -7,7 +7,7 @@
         <div style="font-size: 20px; font-weight: bold;">违规上报管理</div>
         <el-dropdown>
           <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 管理员 王经理 <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user"></i> 管理员 {{userName}} <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
@@ -25,7 +25,12 @@
         </div>
 
         <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-          <el-input v-model="searchQuery" placeholder="请输入查询内容" style="margin-right: 10px;"></el-input>
+          <el-input v-model="singleData.studentId" placeholder="学号" style="margin-right: 10px;"></el-input>
+          <el-input v-model="singleData.name" placeholder="姓名" style="margin-right: 10px;"></el-input>
+          <el-input v-model="singleData.examRoom" placeholder="考场" style="margin-right: 10px;"></el-input>
+          <el-input v-model="singleData.subject" placeholder="科目" style="margin-right: 10px;"></el-input>
+          <el-input v-model="singleData.remark" placeholder="违规说明" style="margin-right: 10px;"></el-input>
+
           <el-button type="primary" @click="addRecord" style="margin-right: 10px;">新增</el-button>
           <el-button type="success" @click="exportData">导出</el-button>
         </div>
@@ -37,10 +42,10 @@
               <el-table-column prop="name" label="姓名" width="150"></el-table-column>
               <el-table-column prop="examRoom" label="考场" width="150"></el-table-column>
               <el-table-column prop="subject" label="科目" width="150"></el-table-column>
-              <el-table-column prop="remark" label="备注说明" width="200"></el-table-column>
+              <el-table-column prop="remark" label="违规说明" width="200"></el-table-column>
               <el-table-column label="操作" width="200" align="center">
                 <template slot-scope="scope">
-                  <el-button size="mini" type="success" @click="editRecord(scope.row)" style="margin-right: 10px;">编辑</el-button>
+<!--                  <el-button size="mini" type="success" @click="editRecord(scope.row)" style="margin-right: 10px;">编辑</el-button>-->
                   <el-button size="mini" type="danger" @click="deleteRecord(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
@@ -64,7 +69,13 @@ export default {
   name: 'ViolationPage',
   data() {
     return {
-      searchQuery: '',
+      singleData:{
+        studentId: '',
+        name: '',
+        examRoom: '',
+        subject: '',
+        remark: ''
+      },
       tableData: [
         {
           studentId: '20210001',
@@ -81,7 +92,10 @@ export default {
           remark: '作弊'
         },
         // 添加更多数据
+
       ],
+      //用户名
+      userName:'xxxx'
     };
   },
   methods: {
@@ -98,6 +112,9 @@ export default {
       // 删除按钮
     },
   },
+  mounted() {
+    var parse = JSON.parse(localStorage.getItem("currentAdmin"))
+    this.userName = parse.adminName  }
 };
 </script>
 

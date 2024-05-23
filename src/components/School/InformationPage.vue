@@ -7,7 +7,7 @@
         <div style="font-size: 20px; font-weight: bold;">集体信息</div>
         <el-dropdown>
           <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 你好，xxx <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user"></i> 你好，{{groupInfoForm.schoolerAccount}} <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
@@ -25,8 +25,8 @@
         </div>
         <el-card class="large-card">
           <el-form :model="groupInfoForm" label-width="120px">
-            <el-form-item label="账号">
-              <el-input v-model="groupInfoForm.account"></el-input>
+            <el-form-item label="用户身份证">
+              <el-input v-model="groupInfoForm.idCard"></el-input>
             </el-form-item>
             <el-form-item label="学校名称">
               <el-input v-model="groupInfoForm.schoolName"></el-input>
@@ -47,11 +47,17 @@ export default {
   data() {
     return {
       groupInfoForm: {
-        account: '',
+        idCard:'',
+        schoolerAccount: '',
         schoolName: '',
-        schoolId: ''
+        schoolId: '',
       }
     };
+  },
+
+  mounted() {
+    //从localStorage读取相关信息
+    this.groupInfoForm = JSON.parse(localStorage.getItem("currentSchool"))
   }
 }
 </script>

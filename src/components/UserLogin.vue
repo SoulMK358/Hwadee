@@ -19,7 +19,7 @@
               </el-form-item>
               <br />
               <el-form-item label="密码">
-                <el-input type="password" v-model="loginForm.stuPassword" placeholder="请输入密码"></el-input>
+                <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
               </el-form-item>
               <br />
               <el-form-item label-width="4px">
@@ -89,7 +89,7 @@
         //登录人员信息
         loginForm: {
           idCard: '',
-          stuPassword: ''
+          password: ''
         },
         //学生注册信息表
         registerForm:{
@@ -150,35 +150,89 @@
         //学生登录
         if (formName == "loginForm"){
           if(_this.role=="学生"){
-            this.$router.push("/StuHomePage")
+            // this.$router.push("/StuHomePage")
             // console.log("Stu loginSubmit")
-            // //向后端发送登录人员信息表格
-            // this.$axios({
-            //   method:"post",
-            //   url: "/studentLogin",
-            //   data:JSON.stringify(this[formName])
-            // }).then(res=>{
-            //   console.log(res)
-            //   //弹窗显示后端返回的信息（成功、失败原因）
-            //   _this.$message({
-            //     type: res.data.code == 200 ? "success" : "error",
-            //     message: res.data.message
-            //   })
+            //向后端发送登录人员信息表格
+            this.$axios({
+              method:"post",
+              url: "/studentLogin",
+              data:JSON.stringify(this[formName])
+            }).then(res=>{
+              console.log(res)
+              //弹窗显示后端返回的信息（成功、失败原因）
+              _this.$message({
+                type: res.data.code == 200 ? "success" : "error",
+                message: res.data.message == null ? "服务器未连接" : res.data.message
+              })
 
+              //登录成功，跳转界面
+              if (res.data.code == 200){
+                //保存当前用户的个人相关信息，以便后续使用
+                localStorage.setItem("currentUser",JSON.stringify(res.data.data))
+                setTimeout(function (){
 
-            //   //登录成功，跳转界面
-            //   if (res.data.code == 200){
-            //     setTimeout(function (){
-            //       //保存当前用户的个人相关信息，以便后续使用
-            //       localStorage.setItem("currentUser",JSON.stringify(res.data.data))
-            //       _this.$router.push("/StuHomePage")
-            //     },800)
-            //   }
-            // })
-          } else if(_this.role=="院校"){
-            this.$router.push('/SchoolHomePage')
-          } else if(_this.role=="管理员"){
-            this.$router.push('/AdminHomePage')
+                  _this.$router.push("/StuHomePage")
+                },800)
+              }
+            })
+          }
+
+          else if(_this.role=="院校"){
+            var datas = {
+              idCard:_this.loginForm.idCard,
+              schoolerPassword:_this.loginForm.password
+            }
+            this.$axios({
+              method:"post",
+              url:"/schoolerLogin",
+              data: JSON.stringify(datas)
+            }).then(res=>{
+              console.log(res)
+              //弹窗显示后端返回的信息（成功、失败原因）
+              _this.$message({
+                type: res.data.code == 200 ? "success" : "error",
+                message: res.data.message == null ? "服务器未连接" : res.data.message
+              })
+              if (res.data.code == 200){
+                //成功后保存后端返回信息
+                //保存当前用户的个人相关信息，以便后续使用
+                res.data.data["idCard"] = _this.loginForm.idCard
+                localStorage.setItem("currentSchool",JSON.stringify(res.data.data))
+                setTimeout(function (){
+                  _this.$router.push("/SchoolHomePage")
+                },800)
+
+              }
+
+            })
+
+          }
+          else if(_this.role=="管理员"){
+            var datas = {
+              idCard:_this.loginForm.idCard,
+              adminPassword:_this.loginForm.password
+            }
+            this.$axios({
+              method:"post",
+              url:"/adminLogin",
+              data: JSON.stringify(datas)
+            }).then(res=>{
+              console.log(res)
+              //弹窗显示后端返回的信息（成功、失败原因）
+              _this.$message({
+                type: res.data.code == 200 ? "success" : "error",
+                message: res.data.message == null ? "服务器未连接" : res.data.message
+              })
+              if (res.data.code == 200){
+                //成功后保存后端返回信息
+                localStorage.setItem("currentAdmin", JSON.stringify(res.data.data))
+                setTimeout(function (){
+                  _this.$router.push("/AdminHomePage")
+                })
+
+              }
+
+            })
           }
         }
 
@@ -197,6 +251,11 @@
               type: res.data.code == 200 ? "success" : "error",
               message: res.data.data
             })
+            if (res.data.code == 200){
+              setTimeout(function (){
+                _this.registerStatusInvert()
+              },500)
+            }
 
           })
         }

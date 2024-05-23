@@ -27,33 +27,49 @@
           <el-form :model="collectiveExamForm" label-width="120px">
 
             <el-form-item label="考试类型">
-              <el-select v-model="collectiveExamForm.examType" placeholder="请选择考试类型">
-                <el-option label="类型一" value="1"></el-option>
-                <el-option label="类型二" value="2"></el-option>
+              <el-select v-model="collectiveExamForm.examType" @change="courseSelected" placeholder="请选择考试类型">
+                <el-option v-for="course in courses" :label="course.label" :value="course.value"></el-option>
               </el-select>
             </el-form-item>
 
             <el-form-item label="进度流程">
                 <el-steps :active="0" finish-status="success" style="width: 900px;" align-center>
-                  <el-step title="创建考试"></el-step>
-                  <el-step title="报名结束"></el-step>
-                  <el-step title="考生考试"></el-step>
+                  <el-step title="开始报名"></el-step>
+                  <el-step title="选择科目"></el-step>
+                  <el-step title="学校缴费"></el-step>
+                  <el-step title="考试结束"></el-step>
                   <el-step title="成绩公布"></el-step>
                 </el-steps>
             </el-form-item>
 
             <el-form-item label="名单上传">
+<!--              <el-upload-->
+<!--                action="#"-->
+<!--                list-type="text"-->
+<!--                :on-remove="handleRemove"-->
+<!--                :on-success="handleSuccess"-->
+<!--                :before-upload="beforeUpload"-->
+<!--                :http-request="uploadFile"-->
+<!--                :file-list="fileList"-->
+<!--                :auto-upload="false"-->
+<!--                :headers="headers"-->
+<!--                drag>-->
+<!--                <i class="el-icon-upload"></i>-->
+<!--                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em><br>Upload.xlsx</div>-->
+<!--              </el-upload>-->
               <el-upload
-                action="#"
-                list-type="text"
-                :on-preview="handlePreview"
+                class="upload-demo" action
+                :http-request="uploadFile"
+                ref="upload"
+                :limit="fileLimit"
                 :on-remove="handleRemove"
                 :file-list="fileList"
-                :auto-upload="false"
-                drag>
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em><br>Upload.xlsx</div>
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                :headers="headers">
+              <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
               </el-upload>
+
             </el-form-item>
 
             <el-form-item>
@@ -76,7 +92,22 @@ export default {
       collectiveExamForm: {
         examType: '',
       },
-      fileList: []
+      //文件保存处
+      fileList: [],
+      //允许上传文件类型
+      fileType:["xls", "xlsx"],
+      // 运行上传文件大小，单位 M
+      fileSize: 50,
+      // 附件数量限制
+      fileLimit: 5,
+      //请求头
+      headers: { "Content-Type": "multipart/form-data" },
+      //用于保存后端传回的可选科目
+      courses:[{
+        label:"123",
+        value:"2323",
+      }],
+      schoolMsg:''
     };
   },
   methods: {
@@ -86,12 +117,89 @@ export default {
     handleRegister() {
       console.log('报名');
     },
-    handlePreview(file) {
-      console.log('预览文件', file);
+    //上传文件前检查格式
+    beforeUpload(file){
+      if (file.type != "" || file.type != null || file.type != undefined){
+        //截取文件的后缀，判断文件类型
+        const FileExt = file.name.replace(/.+\./, "").toLowerCase();
+        //计算文件的大小
+        const isLt5M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
+        //如果大于50M
+        if (!isLt5M) {
+          this.$message('上传文件大小不能超过 50MB!');
+          return false;
+        }
+        //如果文件类型不在允许上传的范围内
+        if(this.fileType.includes(FileExt)){
+          return true;
+        }
+        else {
+          this.$message.error("上传文件格式不正确!");
+          return false;
+        }
+      }
+    },
+    //上传文件的事件
+    uploadFile(item){
+      this.$message('文件上传中........')
+      //上传文件的需要formdata类型;所以要转
+      let FormDatas = new FormData()
+      FormDatas.append('file',item.file);
+      FormDatas.append('courseName', this.collectiveExamForm.examType)
+      FormDatas.append('originSchoolName', this.schoolMsg.schoolName)
+      this.$axios({
+        method: 'post',
+        url: '/groupApply',
+        headers: this.headers,
+        timeout: 30000,
+        data: FormDatas
+      }).then(res=>{
+        console.log(res)
+        // if(res.data.id != '' || res.data.id != null){
+        //   this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
+        //   let i = this.fileList.indexOf(item.file)
+        //   this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
+        //   if(this.fileList.length > 0){//如果上传了附件就把校验规则给干掉
+        //     this.fileflag = false;
+        //     this.$set(this.rules.url,0,'')
+        //   }
+        //   //this.handleSuccess();
+        // }
+      })
     },
     handleRemove(file, fileList) {
       console.log('移除文件', file, fileList);
+    },
+    //上传成功
+    handleSuccess(){
+      console.log("------------上传成功-------------------")
+      console.log(this.fileList)
+
+    },
+
+    //从后端获得已创建的考试科目
+    getCourseList(){
+      var _this = this
+
+      this.$axios({
+        method:"get",
+        url:"/getCoursesBySchool?schoolName=" + _this.schoolName
+      }).then(res=>{
+        console.log(res)
+        //弹窗显示后端返回的信息（成功、失败原因）
+        // _this.$message({
+        //   type: res.data.code == 200 ? "success" : "error",
+        //   message: res.data.message
+        // })
+        _this.courses = res.data
+      })
     }
+  },
+  mounted() {
+    //从localStorage取学校相关信息
+    this.schoolMsg = JSON.parse(localStorage.getItem("currentSchool"))
+
+    this.getCourseList()
   }
 }
 </script>

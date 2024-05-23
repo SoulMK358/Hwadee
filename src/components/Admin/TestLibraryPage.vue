@@ -7,7 +7,7 @@
         <div style="font-size: 20px; font-weight: bold;">考点库管理</div>
         <el-dropdown>
           <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 管理员 王经理 <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user"></i> 管理员 {{userName}} <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
@@ -118,7 +118,9 @@ export default {
         { schoolName: '学校一', schoolId: '001', session: '1', examNumber: '001001', notes: '备注一' },
         { schoolName: '学校二', schoolId: '002', session: '2', examNumber: '002002', notes: '备注二' },
         { schoolName: '学校三', schoolId: '003', session: '3', examNumber: '003003', notes: '备注三' },
-      ]
+      ],
+      //用户名
+      userName:'xxxx'
     };
   },
   methods: {
@@ -134,6 +136,10 @@ export default {
     handleSubmit() {
       console.log('提交', this.examSessionForm);
     }
+  },
+  mounted() {
+    var parse = JSON.parse(localStorage.getItem("currentAdmin"))
+    this.userName = parse.adminName
   }
 }
 </script>

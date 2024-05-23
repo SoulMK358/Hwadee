@@ -9,7 +9,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 // 设置代理的域名，即服务器请求地址
-axios.defaults.baseURL = 'http://192.168.48.135:8081/'
+axios.defaults.baseURL = 'http://192.168.94.84:8081/'
 // 设置 post 请求体
 axios.defaults.headers.post['Content-Type']='application/json'
 // 设置全局 axios 写法
