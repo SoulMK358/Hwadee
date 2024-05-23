@@ -19,12 +19,28 @@
           </el-steps>
         </el-form-item>
         <el-form-item>
-          <el-button type="success">个人缴费</el-button>
+          <el-button @click="dialogVisible = true" type="success">个人缴费</el-button>
           <el-button type="success">打印座位通知单</el-button>
           <el-button type="success">打印考生准考证</el-button>
           <el-button type="danger">报名</el-button>
         </el-form-item>
       </el-form>
+
+      <!-- 弹出框组件 -->
+      <el-dialog
+        title="个人缴费"
+        :visible.sync="dialogVisible"
+        width="30%"
+        :before-close="handleClose">
+        <div>
+          <!-- 在这里加入你的图片 -->
+          <img src="../../assets/微信收款.png" alt="描述文字" style="width: 100%; height: auto;">
+        </div>
+        <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消支付</el-button>
+        <el-button type="primary" @click="dialogVisible = false">已支付</el-button>
+      </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -67,6 +83,8 @@ export default {
           ],
         },
       ],
+      // 控制弹出框显示隐藏
+      dialogVisible: false
     }
   },
   methods: {
@@ -132,6 +150,14 @@ export default {
 
 
 
+    },
+
+    handleClose() {
+      this.$confirm('确定要关闭弹出框吗？')
+        .then(() => {
+          this.dialogVisible = false;
+        })
+        .catch(() => {});
     }
   },
   mounted() {

@@ -28,7 +28,7 @@
 
             <el-form-item label="考试类型">
               <el-select v-model="collectiveExamForm.examType" @change="courseSelected" placeholder="请选择考试类型">
-                <el-option v-for="course in courses" :label="course.label" :value="course.value"></el-option>
+                <el-option v-for="course in courses" :key="course.value" :label="course.label" :value="course.value"></el-option>
               </el-select>
             </el-form-item>
 
@@ -73,14 +73,33 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="handleCollectivePayment" style="position: relative; left: 320px;">集体缴费</el-button>
+              <el-button type="primary" @click="dialogVisible = true" style="position: relative; left: 320px;">集体缴费</el-button>
               <el-button type="danger" @click="handleRegister">报名</el-button>
             </el-form-item>
 
           </el-form>
         </el-card>
       </el-main>
+
+
     </el-container>
+    <!-- 弹出框组件 -->
+    <el-dialog
+      title="集体缴费"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose">
+      <div>
+        <!-- 在这里加入你的图片 -->
+        <img src="../../assets/微信收款.png" alt="描述文字" style="width: 100%; height: auto;">
+      </div>
+      <div style="display: flex; align-items: center; align-content: center">
+        <el-button @click="dialogVisible = false">取消支付</el-button><br>
+        <el-button type="primary" @click="dialogVisible = false">已支付</el-button>
+      </div>
+
+
+    </el-dialog>
   </div>
 </template>
 
@@ -107,7 +126,9 @@ export default {
         label:"123",
         value:"2323",
       }],
-      schoolMsg:''
+      schoolMsg:'',
+      // 控制弹出框显示隐藏
+      dialogVisible: false
     };
   },
   methods: {
@@ -170,11 +191,12 @@ export default {
     handleRemove(file, fileList) {
       console.log('移除文件', file, fileList);
     },
-    //上传成功
-    handleSuccess(){
-      console.log("------------上传成功-------------------")
-      console.log(this.fileList)
-
+    handleClose() {
+      this.$confirm('确定要关闭弹出框吗？')
+        .then(() => {
+          this.dialogVisible = false;
+        })
+        .catch(() => {});
     },
 
     //从后端获得已创建的考试科目

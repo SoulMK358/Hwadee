@@ -26,7 +26,7 @@
           </div>
           <div>
             <el-button type="default" @click="saveForm" style="border: 1px solid #409eff; color: #409eff; margin-left: 10px;">保存</el-button>
-            <el-button type="primary" @click="createMarshalling">发送</el-button>
+<!--            <el-button type="primary" @click="createMarshalling">发送</el-button>-->
           </div>
         </div>
         <el-card>
@@ -34,8 +34,8 @@
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="考试类型">
-                  <el-select v-model="form.examType" placeholder="请选择考试类型">
-                    <el-option v-for="course in courses" :label="course.label" :value="course.value"></el-option>
+                  <el-select v-model="form.examType" @change="getSchoolListByCourse" placeholder="请选择考试类型">
+                    <el-option v-for="course in courses" :key="course.value" :label="course.label" :value="course.value"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -58,22 +58,26 @@
 <!--                    <el-option label="规格二" value="2"></el-option>-->
 <!--                  </el-select>-->
 <!--                </el-form-item>-->
+                <el-form-item label="考场配置">
+                  <el-select v-model="form.examRoomConfig" placeholder="请选择考场配置">
+                    <el-option v-for="school in schools" :key="school.value" :label="school.label" :value="school.value"></el-option>
+                  </el-select>
+                </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="考场配置">
-                  <br>
-<!--                  <el-input v-model="form.examRoomConfig" placeholder="请输入考场配置"></el-input>-->
-                  <el-select v-model="form.examRoomConfig" placeholder="请选择考场配置">
-                    <el-option v-for="course in courses" :label="course.label" :value="course.value"></el-option>
-                  </el-select>
-                </el-form-item>
+<!--                <el-form-item label="考场配置">-->
+<!--&lt;!&ndash;                  <el-input v-model="form.examRoomConfig" placeholder="请输入考场配置"></el-input>&ndash;&gt;-->
+<!--                  <el-select v-model="form.examRoomConfig" placeholder="请选择考场配置">-->
+<!--                    <el-option v-for="school in schools" :key="school.value" :label="school.label" :value="school.value"></el-option>-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
               </el-col>
               <el-col :span="12">
-                <el-form-item label="教室数量">
-                  <el-input v-model="form.classroomNumber" placeholder="请输入教室数量"></el-input>
-                </el-form-item>
+<!--                <el-form-item label="教室数量">-->
+<!--                  <el-input v-model="form.classroomNumber" placeholder="请输入教室数量"></el-input>-->
+<!--                </el-form-item>-->
               </el-col>
 <!--              <el-col :span="8">-->
 <!--                <el-form-item label="监考老师数量">-->
@@ -117,33 +121,106 @@ export default {
         label:"123",
         value:"2323",
       }],
+      schools:[{
+        label:"",
+        value:"",
+      }],
       //用户名
       userName:'xxxx'
     };
   },
   methods: {
+    //重置按钮
     handleReset() {
-      //重置按钮
-      this.$refs.form.resetFields();
+      var _this = this
+      this.$confirm("是否确认重置数据","提示",{
+        iconClass: "el-icon-question",//自定义图标样式
+        confirmButtonText: "确认",//确认按钮文字更换
+        cancelButtonText: "取消",//取消按钮文字更换
+        showClose: true,//是否显示右上角关闭按钮
+        type: "warning",//提示类型  success/info/warning/error
+      }).then(()=>{
+        //确认操作
+        _this.form = {
+          examType: '',
+          sessionTime: '',
+          tempExamCardPrintTime: '',
+          examRoomConfig: '',
+          classroomNumber: '',
+        }
+        localStorage.removeItem("marshallingSave")
+      }).catch(() => {
+        //取消操作
+      })
+
     },
     handleAdd() {
-      // 添加考场按钮
+      // 添加考场按钮，安排考场信息，发往后端
+      var _this = this
+      var datas = {
+        courseName:this.form.examType,
+        examTime:this.form.sessionTime,
+        printTime:this.form.tempExamCardPrintTime,
+        examSchools:[]
+      }
+      datas.examSchools.push(this.form.examRoomConfig)
+
+      this.$confirm("是否确认提交该编场数据","提示",{
+        iconClass: "el-icon-question",//自定义图标样式
+        confirmButtonText: "确认",//确认按钮文字更换
+        cancelButtonText: "取消",//取消按钮文字更换
+        showClose: true,//是否显示右上角关闭按钮
+        type: "warning",//提示类型  success/info/warning/error
+      }).then(()=>{
+        //确认操作
+        this.$axios({
+          method:"post",
+          url:'/adminExam',
+          data:JSON.stringify(datas)
+        }).then(res=>{
+          console.log(res)
+          //弹窗显示后端返回的信息（成功、失败原因）
+          _this.$message({
+            type: res.data.code == 200 ? "success" : "error",
+            message: res.data.message
+          })
+          if(res.data.code == 200){
+            //如果成功，清空表格数据
+            _this.form = {
+              examType: '',
+              sessionTime: '',
+              tempExamCardPrintTime: '',
+              examRoomConfig: '',
+              classroomNumber: '',
+            }
+            localStorage.removeItem("marshallingSave")
+          }
+        })
+      }).catch(() => {
+        //取消操作
+      })
+
     },
-    //从后端获得已创建的考试科目(要改）
-    getCourseList(){
+    //根据选择科目，从后端获得学校
+    getSchoolListByCourse(){
       var _this = this
 
       this.$axios({
         method:"get",
-        url:"/getCoursesBySchool?schoolName=" + _this.schoolName
+        url:"/getSchoolListByCourse?courseName=" + _this.form.examType
       }).then(res=>{
         console.log(res)
-        //弹窗显示后端返回的信息（成功、失败原因）
-        // _this.$message({
-        //   type: res.data.code == 200 ? "success" : "error",
-        //   message: res.data.message
-        // })
-        _this.courses = res.data
+        // 弹窗显示后端返回的信息（成功、失败原因）
+        _this.$message({
+          type: res.data.code == 200 ? "success" : "error",
+          message: res.data.code == 200 ?"获取学校成功":"获取学校失败"
+        })
+         _this.form.examRoomConfig = ''
+        if (res.data.code == 200){
+          _this.schools = res.data.data
+        }
+
+
       })
     },
     //保存Form内容
@@ -164,27 +241,12 @@ export default {
         this.form = JSON.parse(t)
       }
     },
-    // 安排考场信息，发往后端
-    createMarshalling(){
-      var datas = {
-
-      }
-
-      this.$axios({
-        method:"post",
-        url:'/',
-        data:JSON.stringify(datas)
-      }).then(res=>{
-
-      })
-    },
   },
   mounted() {
     var parse = JSON.parse(localStorage.getItem("currentAdmin"))
     this.userName = parse.adminName
     this.courses = parse.courseList
 
-    this.getCourseList()
     this.getSavedMsg()
   }
 }

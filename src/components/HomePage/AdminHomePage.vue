@@ -7,9 +7,9 @@
           <el-menu-item index="0" style="color: white; text-align: center;">
             <i class="el-icon-menu"></i>
           </el-menu-item>
-<!--          <el-menu-item index="1" style="color: white;">
-            <i class="el-icon-document"></i> 报名报考管理
-          </el-menu-item> -->
+<!--          <el-menu-item index="1" style="color: white;">-->
+<!--            <i class="el-icon-document"></i> 报名报考管理-->
+<!--          </el-menu-item>-->
           <el-menu-item index="1" style="color: white;">
             <i class="el-icon-edit"></i> 编场管理
           </el-menu-item>
@@ -21,6 +21,9 @@
           </el-menu-item>
           <el-menu-item index="4" style="color: white;">
             <i class="el-icon-warning"></i> 违规上报管理
+          </el-menu-item>
+          <el-menu-item index="5" @click="exit" style="color: white;">
+            <i class="el-icon-close"></i> 退出系统
           </el-menu-item>
         </el-menu>
       </el-aside>
@@ -68,6 +71,17 @@ export default {
       } else if (key == '4') {
         this.currentComponent = 'ViolationPageVue';
       }
+    },
+    exit(){
+      var _this = this
+      this.$message({
+        type:"success",
+        message:"正在退出..."
+      })
+      setTimeout(function (){
+        localStorage.removeItem("currentAdmin")
+        _this.$router.push("/")
+      },500)
     }
   },
   mounted() {

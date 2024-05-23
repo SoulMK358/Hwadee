@@ -16,6 +16,9 @@
           <el-menu-item index="3" style="color: white;">
             <i class="el-icon-location"></i><span>创建考试</span>
           </el-menu-item>
+          <el-menu-item index="4" @click="exit" style="color: white;">
+            <i class="el-icon-close"></i><span>退出系统</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
 
@@ -56,6 +59,18 @@ export default {
       } else if (key == '3') {
         this.currentComponent = 'EnrollmentPageVue';
       }
+    },
+
+    exit(){
+      var _this = this
+      this.$message({
+        type:"success",
+        message:"正在退出..."
+      })
+      setTimeout(function (){
+        localStorage.removeItem("currentAdmin")
+        _this.$router.push("/")
+      },500)
     }
   }
 }

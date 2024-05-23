@@ -16,7 +16,6 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
-
       <!-- 主要内容 -->
       <el-main>
         <div>
@@ -28,9 +27,8 @@
             <el-row :gutter="20">
               <el-col :span="24">
                 <el-form-item label="创建考试类型" required>
-
                   <el-select v-model="form.examType" placeholder="请选择创建考试类型">
-                    <el-option v-for="course in courses" :label="course.label" :value="course.value"></el-option>
+                    <el-option v-for="course in courses" :key="course.value" :label="course.label" :value="course.value"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
@@ -108,6 +106,7 @@
           </el-form>
         </el-card>
       </el-main>
+
     </el-container>
   </div>
 </template>

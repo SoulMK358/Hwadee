@@ -4,10 +4,9 @@
     <el-main class="my-el-main">
       <el-container>
 
-      <!--登录界面-->
-        <el-aside v-if="!registerStatus" width="40%">
+        <!--登录界面-->
+        <el-aside v-if="uiStatus === 1" width="40%">
           <el-card class="el-card2">
-
             <div slot="header" class="el-login">
               <span>{{role}}登录</span>
             </div>
@@ -25,8 +24,12 @@
               <el-form-item label-width="4px">
 <!--                点击后触发submit登录函数，提交表格信息-->
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-<!--                点击显示注册页面，登录界面隐藏-->
-                <el-button type="primary" v-if="role=='学生'" @click="registerStatusInvert">注册</el-button>
+<!--                点击显示注册页面，其他界面隐藏-->
+                <el-button type="primary" v-if="role=='学生'" @click="statusChange(2)">注册</el-button>
+<!--                点击显示修改密码页面，其他界面隐藏-->
+                <el-button type="primary" v-if="role=='学生'" @click="statusChange(3)">修改密码</el-button>
+
+                <el-button type="primary" @click="backEvent">返回选择身份</el-button>
               </el-form-item>
 
             </el-form>
@@ -34,9 +37,8 @@
           </el-card>
 
         </el-aside>
-
         <!--注册界面-->
-        <el-aside v-if="registerStatus" width="35%">
+        <el-aside v-if="uiStatus === 2" width="35%">
           <el-card class="el-card">
             <div slot="header" class="el-login">
               <span>{{role}}注册</span>
@@ -56,18 +58,51 @@
                 <el-input type="password" v-model="registerForm.stuConfirmPassword" @blur="passwordConfirm" placeholder="请确认密码"></el-input>
               </el-form-item>
               <el-form-item label="当前学校">
-                <el-select v-model="selectedSchoolId" placeholder="请选择学校">
-                  <el-option v-for="school in schools" :label="school.schoolName" :value="school.schoolId" :key="school.schoolId"></el-option>
+                <el-select v-model="registerForm.schoolName" placeholder="请选择学校">
+                  <el-option v-for="school in schools" :label="school.schoolName" :value="school.schoolName" :key="school.schoolId"></el-option>
                 </el-select>
               </el-form-item>
 
               <el-form-item label-width="1px">
                 <el-button type="primary" @click="submitForm('registerForm')">注册</el-button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <el-button type="primary" @click="registerStatusInvert" style="text-align:center;">返回登录</el-button>
+                <el-button type="primary" @click="statusChange(1)" style="text-align:center;">去登录</el-button>
               </el-form-item>
 
             </el-form>
+          </el-card>
+
+        </el-aside>
+        <!--修改密码 -->
+        <el-aside v-if="uiStatus === 3" width="40%">
+          <el-card class="el-card2">
+            <div slot="header" class="el-login">
+              <span>{{role}}登录</span>
+            </div>
+            <br />
+            <el-form :model="loginForm" :rules="rules" ref="loginForm" label-width="60px">
+
+              <el-form-item label="账号" prop="idCard">
+                <el-input v-model="changePasswordForm.idCard" placeholder="请输入身份证号"></el-input>
+              </el-form-item>
+              <br />
+              <el-form-item label="旧密码">
+                <el-input type="password" v-model="changePasswordForm.oldPassword" placeholder="请输入旧密码"></el-input>
+              </el-form-item>
+              <br />
+              <el-form-item label="新密码">
+                <el-input type="password" v-model="changePasswordForm.newPassword" placeholder="请输入新密码"></el-input>
+              </el-form-item>
+              <br />
+              <el-form-item label-width="4px">
+                <!--                点击后触发submit登录函数，提交表格信息-->
+                <el-button type="primary" @click="changePassword">修改密码</el-button>
+                <!--                点击显示注册页面，登录界面隐藏-->
+                <el-button type="primary" v-if="role=='学生'" @click="statusChange(1)">返回登录</el-button>
+              </el-form-item>
+
+            </el-form>
+
           </el-card>
 
         </el-aside>
@@ -84,8 +119,8 @@
       return {
         // 不同入口进入的身份--学生、学校、管理员
         role: this.params,
-        // 控制登录和注册界面的显示
-        registerStatus:false,
+        // 控制登录1、注册2、修改密码3 界面的显示
+        uiStatus:1,
         //登录人员信息
         loginForm: {
           idCard: '',
@@ -93,11 +128,17 @@
         },
         //学生注册信息表
         registerForm:{
-          idCard: "1234444",
-          stuName: "水水水",
-          stuPassword: "123",
-          stuConfirmPassword: "123",
-          schoolName: "二仙桥职业学院"
+          idCard: "",
+          stuName: "",
+          stuPassword: "",
+          stuConfirmPassword: "",
+          schoolName: ""
+        },
+        //学生修改密码表
+        changePasswordForm:{
+          idCard:'',
+          oldPassword:'',
+          newPassword:''
         },
         //表单验证规则
         rules: {
@@ -147,22 +188,28 @@
         console.log(this[formName])
         //防止axios返回then函数中this被覆盖
         var _this = this
-        //学生登录
+        //登录
         if (formName == "loginForm"){
+          //学生登录
           if(_this.role=="学生"){
             // this.$router.push("/StuHomePage")
             // console.log("Stu loginSubmit")
+            // 设置待传JSON信息的键：值对应方式
+            var datas = {
+              idCard: this[formName].idCard,
+              stuPassword: this[formName].password
+            }
             //向后端发送登录人员信息表格
             this.$axios({
-              method:"post",
+              method: "post",
               url: "/studentLogin",
-              data:JSON.stringify(this[formName])
+              data: JSON.stringify(datas)
             }).then(res=>{
               console.log(res)
               //弹窗显示后端返回的信息（成功、失败原因）
               _this.$message({
                 type: res.data.code == 200 ? "success" : "error",
-                message: res.data.message == null ? "服务器未连接" : res.data.message
+                message: res.data.data.message
               })
 
               //登录成功，跳转界面
@@ -170,13 +217,12 @@
                 //保存当前用户的个人相关信息，以便后续使用
                 localStorage.setItem("currentUser",JSON.stringify(res.data.data))
                 setTimeout(function (){
-
                   _this.$router.push("/StuHomePage")
                 },800)
               }
             })
           }
-
+          //院校登录
           else if(_this.role=="院校"){
             var datas = {
               idCard:_this.loginForm.idCard,
@@ -207,6 +253,7 @@
             })
 
           }
+          //管理员登录
           else if(_this.role=="管理员"){
             var datas = {
               idCard:_this.loginForm.idCard,
@@ -239,6 +286,7 @@
         //注册
         else if (formName == "registerForm"){
           console.log("registerSubmit")
+          console.log(this[formName])
           //向后端发送注册人员信息表格
           this.$axios({
             method:"post",
@@ -253,20 +301,20 @@
             })
             if (res.data.code == 200){
               setTimeout(function (){
-                _this.registerStatusInvert()
+                _this.statusChange(1)
               },500)
             }
 
           })
         }
       },
-      //切换登录注册页面
-      registerStatusInvert(){
-        this.registerStatus = !this.registerStatus
-        if (this.registerStatus){
+      //切换登录/注册/修改密码页面
+      statusChange(status){
+        this.uiStatus = status
+        //如果是注册页面，则拉取已有学校列表
+        if (status == 2){
           this.getSchoolList()
         }
-
       },
       //获取学校列表
       getSchoolList(){
@@ -290,7 +338,52 @@
               message: "密码不一致，请再次确认"
             })
         }
+      },
+      //返回选择登录方式界面
+      backEvent(){
+        this.$router.push('/')
+      },
+      changePassword(){
+        var _this = this
+
+        this.$confirm("是否确认修改密码","提示",{
+          iconClass: "el-icon-question",//自定义图标样式
+          confirmButtonText: "确认",//确认按钮文字更换
+          cancelButtonText: "取消",//取消按钮文字更换
+          showClose: true,//是否显示右上角关闭按钮
+          type: "warning",//提示类型  success/info/warning/error
+        }).then(()=>{
+          //确认操作
+          this.$axios({
+            method:"post",
+            url:"/changePassword",
+            data:JSON.stringify(_this.changePasswordForm)
+          }).then(res=>{
+            console.log(res)
+            //弹窗显示后端返回的信息（成功、失败原因）
+            _this.$message({
+              type: res.data.code == 200 ? "success" : "error",
+              message: res.data.message
+            })
+            if (res.data.code == 200){
+              _this.changePasswordForm = {
+                idCard:'',
+                oldPassword:'',
+                newPassword:''
+              }
+              setTimeout(function (){
+                _this.statusChange(1)
+              },500)
+
+            }
+          })
+
+        }).catch(() => {
+          //取消操作
+        })
       }
+
+
 
 
     },
@@ -337,15 +430,15 @@
   .el-card {
     background: rgb(247,250,255);
     padding: 30px;
-    width: 320px;
+    width: 350px;
     height: 430px;
   }
 
   .el-card2 {
     background: rgb(247,250,255);
     padding: 30px;
-    width: 300px;
-    height: 310px;
+    width: 350px;
+    height: 380px;
   }
 
   .el-login {

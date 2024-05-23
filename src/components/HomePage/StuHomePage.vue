@@ -25,8 +25,6 @@
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
         <el-button type="primary" icon="el-icon-switch-button" @click="exit">退出系统</el-button>
-        <span style="text-align: left">　　　当前身份：{{ Stu.role }}</span>
-        <span>用户名：{{ Stu.userName }}</span>
       </el-header>
 
       <el-main>
@@ -94,13 +92,14 @@ export default {
       this.url = url
     },
     exit(){
+      var _this = this
       this.$message({
         type:"success",
         message:"正在退出..."
       })
       setTimeout(function (){
         localStorage.removeItem("currentUser")
-        this.$router.push("/")
+        _this.$router.push("/")
       },500)
     }
   },
