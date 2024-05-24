@@ -33,11 +33,11 @@
             </el-form-item>
 
             <el-form-item label="进度流程">
-                <el-steps :active="0" finish-status="success" style="width: 900px;" align-center>
+                <el-steps :active="step" finish-status="success" style="width: 900px;" align-center>
                   <el-step title="开始报名"></el-step>
                   <el-step title="选择科目"></el-step>
                   <el-step title="学校缴费"></el-step>
-                  <el-step title="考试结束"></el-step>
+                  <el-step title="报名成功"></el-step>
                   <el-step title="成绩公布"></el-step>
                 </el-steps>
             </el-form-item>
@@ -95,7 +95,7 @@
       </div>
       <div style="display: flex; align-items: center; align-content: center">
         <el-button @click="dialogVisible = false">取消支付</el-button><br>
-        <el-button type="primary" @click="dialogVisible = false">已支付</el-button>
+        <el-button type="primary" @click="afterPay">已支付</el-button>
       </div>
 
 
@@ -134,7 +134,9 @@ export default {
       }],
       schoolMsg:'',
       // 控制弹出框显示隐藏
-      dialogVisible: false
+      dialogVisible: false,
+
+      step:1
     };
   },
   methods: {
@@ -142,6 +144,11 @@ export default {
       console.log('集体缴费');
     },
     handleRegister() {
+      this.$message({
+        type:"success",
+        message:"报名成功"
+      })
+      this.step = 4
       console.log('报名');
     },
     //上传文件前检查格式
@@ -231,7 +238,25 @@ export default {
         // })
         _this.courses = res.data
       })
-    }
+    },
+
+    courseSelected(){
+      this.$message({
+        type:"success",
+        message:"选择成功"
+      })
+      this.step = 2
+    },
+
+    afterPay(){
+      this.$message({
+        type:"success",
+        message:"支付成功"
+      })
+      this.dialogVisible = false
+      this.step = 3
+    },
+
   },
   mounted() {
     //从localStorage取学校相关信息

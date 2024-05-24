@@ -22,7 +22,7 @@
           <el-button @click="dialogVisible = true" type="success">个人缴费</el-button>
 <!--          <el-button type="success">打印座位通知单</el-button>-->
           <el-button @click="filePrint" type="success">打印考生准考证</el-button>
-          <el-button type="danger">报名</el-button>
+          <el-button @click="enrollClick" type="danger">报名</el-button>
         </el-form-item>
       </el-form>
 
@@ -38,7 +38,7 @@
         </div>
         <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取消支付</el-button>
-        <el-button type="primary" @click="dialogVisible = false">已支付</el-button>
+        <el-button type="primary" @click="afterPay">已支付</el-button>
       </span>
       </el-dialog>
     </el-card>
@@ -107,6 +107,7 @@ export default {
           type: "success",
           message: "选择成功"
         })
+        this.courseStatus.step = 2
       }
 
     },
@@ -151,7 +152,7 @@ export default {
 
 
     },
-
+    //弹出框关闭事件
     handleClose() {
       this.$confirm('确定要关闭弹出框吗？')
         .then(() => {
@@ -159,38 +160,93 @@ export default {
         })
         .catch(() => {});
     },
-
+    //接收后台发来的准考证文件
     filePrint(){
       var _this = this
       // console.log(JSON.stringify({
       //   idCrad:_this.Stu.idCard,
       //   courseName: _this.courseStatus.courseName
       // }))
-      this.$axios({
-        method:"post",
-        url:"/fileDownload",
-        data:{
-          idCard:_this.Stu.idCard,
-          courseName: _this.courseStatus.courseName
-        }
-      }).then(res=>{
-        console.log(res)
-        // // 处理响应数据
-        // const url = window.URL.createObjectURL(new Blob([res.data]));
-        // const link = document.createElement('a');
-        // link.href = url;
-        // link.setAttribute('download', 'filename.pdf'); // 这里替换为文件名和扩展名
-        // document.body.appendChild(link);
-        // link.click();
-        // document.body.removeChild(link);
-        // console.log("/download?filename=" + res.data.data.split('.')[0])
-        var url = res.data.data;
-        if (res.data.code == 200){
-          window.open("http://192.168.1.3:8081/download?filename=" + res.data.data.split(".")[0])
-        }
-      }).catch((error) => {
-        console.error('下载文件失败:', error);
-      })
+
+      if (this.courseStatus.step == 4){
+        this.$axios({
+          method:"post",
+          url:"/fileDownload",
+          data:{
+            idCard:_this.Stu.idCard,
+            courseName: _this.courseStatus.courseName
+          }
+        }).then(res=>{
+          console.log(res)
+          var url = res.data.data;
+          if (res.data.code == 200){
+            window.open( _this.$axios.defaults.baseURL + "download?filename=" + res.data.data.split(".")[0])
+            _this.courseStatus.step = 5
+          }
+        }).catch((error) => {
+          console.error('下载文件失败:', error);
+        })
+      }
+      else {
+        this.$message({
+          type:"error",
+          message:"打印失败（请按进度完成）"
+        })
+      }
+
+      // this.$axios({
+      //   method:"post",
+      //   url:"/fileDownload",
+      //   data:{
+      //     idCard:_this.Stu.idCard,
+      //     courseName: _this.courseStatus.courseName
+      //   }
+      // }).then(res=>{
+      //   console.log(res)
+      //   var url = res.data.data;
+      //   if (res.data.code == 200){
+      //     window.open( _this.$axios.defaults.baseURL + "download?filename=" + res.data.data.split(".")[0])
+      //     _this.courseStatus.step = 5
+      //   }
+      // }).catch((error) => {
+      //   console.error('下载文件失败:', error);
+      // })
+    },
+    //点击报名按钮事件
+    enrollClick(){
+      if(this.courseStatus.step == 3){
+        this.$message({
+          type:"success",
+          message:"报名成功"
+        })
+        this.courseStatus.step = 4
+      }else {
+        this.$message({
+          type:"error",
+          message:"报名失败"
+        })
+      }
+
+    },
+    //支付后事件
+    afterPay(){
+      if(this.courseStatus.step == 2){
+        this.$message({
+          type:"success",
+          message:"缴费成功"
+        })
+        this.courseStatus.step = 3
+
+      }
+      else {
+        this.$message({
+          type:"error",
+          message:"缴费失败"
+        })
+      }
+
+      this.dialogVisible = false
+
     }
   },
   mounted() {

@@ -26,13 +26,13 @@
         <el-card class="large-card">
           <el-form :model="groupInfoForm" label-width="120px">
             <el-form-item label="用户身份证">
-              <el-input v-model="groupInfoForm.idCard"></el-input>
+              <el-input disabled="true" v-model="groupInfoForm.idCard"></el-input>
             </el-form-item>
             <el-form-item label="学校名称">
-              <el-input v-model="groupInfoForm.schoolName"></el-input>
+              <el-input disabled="true" v-model="groupInfoForm.schoolName"></el-input>
             </el-form-item>
             <el-form-item label="学校编号">
-              <el-input v-model="groupInfoForm.schoolId"></el-input>
+              <el-input disabled="true" v-model="groupInfoForm.schoolId"></el-input>
             </el-form-item>
           </el-form>
         </el-card>
