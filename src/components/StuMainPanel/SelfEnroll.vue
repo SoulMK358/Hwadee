@@ -20,8 +20,8 @@
         </el-form-item>
         <el-form-item>
           <el-button @click="dialogVisible = true" type="success">个人缴费</el-button>
-          <el-button type="success">打印座位通知单</el-button>
-          <el-button type="success">打印考生准考证</el-button>
+<!--          <el-button type="success">打印座位通知单</el-button>-->
+          <el-button @click="filePrint" type="success">打印考生准考证</el-button>
           <el-button type="danger">报名</el-button>
         </el-form-item>
       </el-form>
@@ -158,6 +158,39 @@ export default {
           this.dialogVisible = false;
         })
         .catch(() => {});
+    },
+
+    filePrint(){
+      var _this = this
+      // console.log(JSON.stringify({
+      //   idCrad:_this.Stu.idCard,
+      //   courseName: _this.courseStatus.courseName
+      // }))
+      this.$axios({
+        method:"post",
+        url:"/fileDownload",
+        data:{
+          idCard:_this.Stu.idCard,
+          courseName: _this.courseStatus.courseName
+        }
+      }).then(res=>{
+        console.log(res)
+        // // 处理响应数据
+        // const url = window.URL.createObjectURL(new Blob([res.data]));
+        // const link = document.createElement('a');
+        // link.href = url;
+        // link.setAttribute('download', 'filename.pdf'); // 这里替换为文件名和扩展名
+        // document.body.appendChild(link);
+        // link.click();
+        // document.body.removeChild(link);
+        // console.log("/download?filename=" + res.data.data.split('.')[0])
+        var url = res.data.data;
+        if (res.data.code == 200){
+          window.open("http://192.168.1.3:8081/download?filename=" + res.data.data.split(".")[0])
+        }
+      }).catch((error) => {
+        console.error('下载文件失败:', error);
+      })
     }
   },
   mounted() {
@@ -193,14 +226,14 @@ export default {
     //该学生已选的课程信息,并在选择列表中禁用选项
     this.allCourseStatus = stuMsg.chosen
     // console.log(this.allCourseStatus)
-    for (let course of this.allCourseStatus){
-      for(let exam of this.examClass){
-        if (course.courseName == exam.value){
-          exam.disabled = true
-          break
-        }
-      }
-    }
+    // for (let course of this.allCourseStatus){
+    //   for(let exam of this.examClass){
+    //     if (course.courseName == exam.value){
+    //       exam.disabled = true
+    //       break
+    //     }
+    //   }
+    // }
 
   }
 

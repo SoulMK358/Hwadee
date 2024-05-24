@@ -4,7 +4,7 @@
     <el-container style="height: 100vh;">
       <!-- 头部 -->
       <el-header style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-        <div style="font-size: 20px; font-weight: bold;">集体信息</div>
+        <div style="font-size: 20px; font-weight: bold;">院校信息</div>
         <el-dropdown>
           <span class="el-dropdown-link">
             <i class="el-icon-user"></i> 你好，{{groupInfoForm.schoolerAccount}} <i class="el-icon-arrow-down el-icon--right"></i>
@@ -20,7 +20,7 @@
       <!-- 主要内容 -->
       <el-main>
         <div>
-          <h2>集体信息</h2>
+          <h2>院校信息</h2>
           <p>填写表格内容，创建信息。</p>
         </div>
         <el-card class="large-card">

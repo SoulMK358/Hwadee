@@ -48,7 +48,7 @@ export default {
         aimSchool:"xxx"
       },
 
-      url: "",
+      url: "/StuHomePage/SelfMsg",
       menus: [
         {
         "menuId": 1,

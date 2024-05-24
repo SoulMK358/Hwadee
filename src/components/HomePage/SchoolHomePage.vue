@@ -8,16 +8,16 @@
             <i class="el-icon-menu"></i>
           </el-menu-item>
          <el-menu-item index="1" style="color: white;">
-            <i class="el-icon-document"></i> <span>学校信息</span>
+            <i class="el-icon-document"></i> <span>院校信息</span>
           </el-menu-item>
           <el-menu-item index="2" style="color: white;">
             <i class="el-icon-edit"></i> <span>批量报考</span>
           </el-menu-item>
           <el-menu-item index="3" style="color: white;">
-            <i class="el-icon-location"></i><span>创建考试</span>
+            <i class="el-icon-location"></i> <span>创建考试</span>
           </el-menu-item>
           <el-menu-item index="4" @click="exit" style="color: white;">
-            <i class="el-icon-close"></i><span>退出系统</span>
+            <i class="el-icon-close"></i> <span>退出系统</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

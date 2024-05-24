@@ -7,7 +7,7 @@
         <div style="font-size: 20px; font-weight: bold;">报名报考</div>
         <el-dropdown>
           <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 你好，xxx <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user"></i> 你好，{{groupInfoForm.schoolerAccount}} <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
@@ -116,6 +116,12 @@ export default {
   name: "EnrollmentPage",
   data() {
     return {
+      groupInfoForm: {
+        idCard:'',
+        schoolerAccount: '',
+        schoolName: '',
+        schoolId: '',
+      },
       form: {
         examType: '',
         startTime: '',
@@ -210,6 +216,9 @@ export default {
     //从localStorage取学校相关信息
     var schoolMsg= JSON.parse(localStorage.getItem("currentSchool"))
     this.schoolName = schoolMsg.schoolName
+
+    //从localStorage读取相关信息
+    this.groupInfoForm = JSON.parse(localStorage.getItem("currentSchool"))
 
     this.getSavedMsg()
     this.getCourseList()

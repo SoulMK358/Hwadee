@@ -4,10 +4,10 @@
     <el-container style="height: 100vh;">
       <!-- 头部 -->
       <el-header style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-        <div style="font-size: 20px; font-weight: bold;">集体报考</div>
+        <div style="font-size: 20px; font-weight: bold;">院校报考</div>
         <el-dropdown>
           <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 你好，xxx <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-user"></i> 你好，{{groupInfoForm.schoolerAccount}} <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>查看</el-dropdown-item>
@@ -20,7 +20,7 @@
       <!-- 主要内容 -->
       <el-main>
         <div>
-          <h2>集体报考</h2>
+          <h2>院校报考</h2>
           <p>填写表格内容，报名考试。</p>
         </div>
         <el-card class="large-card">
@@ -108,6 +108,12 @@ export default {
   name: "ApplyPage",
   data() {
     return {
+      groupInfoForm: {
+        idCard:'',
+        schoolerAccount: '',
+        schoolName: '',
+        schoolId: '',
+      },
       collectiveExamForm: {
         examType: '',
       },
@@ -162,6 +168,7 @@ export default {
     },
     //上传文件的事件
     uploadFile(item){
+      var _this = this
       this.$message('文件上传中........')
       //上传文件的需要formdata类型;所以要转
       let FormDatas = new FormData()
@@ -176,6 +183,15 @@ export default {
         data: FormDatas
       }).then(res=>{
         console.log(res)
+        _this.$message({
+          type:res.data.code == 200 ? "success" :"error",
+          message: res.data.message
+        })
+        if(res.data.code == 200){
+          _this.collectiveExamForm.examType = {
+            examType: ''
+          }
+        }
         // if(res.data.id != '' || res.data.id != null){
         //   this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
         //   let i = this.fileList.indexOf(item.file)
@@ -220,6 +236,8 @@ export default {
   mounted() {
     //从localStorage取学校相关信息
     this.schoolMsg = JSON.parse(localStorage.getItem("currentSchool"))
+    //从localStorage读取相关信息
+    this.groupInfoForm = JSON.parse(localStorage.getItem("currentSchool"))
 
     this.getCourseList()
   }
