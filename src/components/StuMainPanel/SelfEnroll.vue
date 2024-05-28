@@ -163,10 +163,6 @@ export default {
     //接收后台发来的准考证文件
     filePrint(){
       var _this = this
-      // console.log(JSON.stringify({
-      //   idCrad:_this.Stu.idCard,
-      //   courseName: _this.courseStatus.courseName
-      // }))
 
       if (this.courseStatus.step == 4){
         this.$axios({
@@ -193,24 +189,6 @@ export default {
           message:"打印失败（请按进度完成）"
         })
       }
-
-      // this.$axios({
-      //   method:"post",
-      //   url:"/fileDownload",
-      //   data:{
-      //     idCard:_this.Stu.idCard,
-      //     courseName: _this.courseStatus.courseName
-      //   }
-      // }).then(res=>{
-      //   console.log(res)
-      //   var url = res.data.data;
-      //   if (res.data.code == 200){
-      //     window.open( _this.$axios.defaults.baseURL + "download?filename=" + res.data.data.split(".")[0])
-      //     _this.courseStatus.step = 5
-      //   }
-      // }).catch((error) => {
-      //   console.error('下载文件失败:', error);
-      // })
     },
     //点击报名按钮事件
     enrollClick(){
@@ -247,50 +225,51 @@ export default {
 
       this.dialogVisible = false
 
+    },
+    //获取可选科目/考场列表
+    getCourseClassroomList(){
+      var _this = this
+
+      this.$axios({
+        method:"get",
+        url:"/getStudentCoursesToChose"
+      }).then(res=>{
+        console.log("-------------获取可选科目/考场列表-------------")
+        console.log(res)
+
+        if (res.data.code == 200){
+          //所有的考试信息,处理成对应格式-examClass
+          var exams = res.data.data
+          var tempExamClasses = [] //初始化考试列表
+          for(let exam of exams){ //批量格式化
+            var key = Object.keys(exam)[0]
+            var tempExamClass = {
+              value:key,
+              label:key,
+              disabled:false,
+              children:[]
+            }
+            for(let school of exam[key]){
+              // console.log(school)
+              tempExamClass.children.push({
+                value:school,
+                label:school,
+              })
+            }
+            tempExamClasses.push(tempExamClass)
+          }
+          _this.examClass = tempExamClasses
+        }
+      })
+
     }
   },
   mounted() {
     console.log("PreRead----------------------------------")
-    var stuMsg = JSON.parse(localStorage.getItem("currentUser"))
-    console.log(stuMsg)
     //学生个人信息
-    this.Stu = stuMsg.student
-    // console.log(this.Stu)
-
-    //所有的考试信息,处理成对应格式-examClass
-    var exams = stuMsg.exams
-    var tempExamClasses = [] //初始化考试列表
-    for(let exam of exams){ //批量格式化
-      var key = Object.keys(exam)[0]
-      var tempExamClass = {
-        value:key,
-        label:key,
-        disabled:false,
-        children:[]
-      }
-      for(let school of exam[key]){
-        // console.log(school)
-        tempExamClass.children.push({
-          value:school,
-          label:school,
-        })
-      }
-      tempExamClasses.push(tempExamClass)
-    }
-    this.examClass = tempExamClasses
-
-    //该学生已选的课程信息,并在选择列表中禁用选项
-    this.allCourseStatus = stuMsg.chosen
-    // console.log(this.allCourseStatus)
-    // for (let course of this.allCourseStatus){
-    //   for(let exam of this.examClass){
-    //     if (course.courseName == exam.value){
-    //       exam.disabled = true
-    //       break
-    //     }
-    //   }
-    // }
-
+    this.Stu = JSON.parse(localStorage.getItem("currentUser"))
+    //获得科目/考场列表
+    this.getCourseClassroomList()
   }
 
 }

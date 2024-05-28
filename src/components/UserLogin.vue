@@ -181,13 +181,14 @@ export default {
           this.$axios({
             method: "post",
             url: "/studentLogin",
+            timeout: 4000,
             data: JSON.stringify(datas)
           }).then(res=>{
             console.log(res)
             //弹窗显示后端返回的信息（成功、失败原因）
             _this.$message({
               type: res.data.code == 200 ? "success" : "error",
-              message: res.data.data.message
+              message: res.data.message
             })
 
             //登录成功，跳转界面
@@ -215,7 +216,7 @@ export default {
             //弹窗显示后端返回的信息（成功、失败原因）
             _this.$message({
               type: res.data.code == 200 ? "success" : "error",
-              message: res.data.message == null ? "服务器未连接" : res.data.message
+              message: res.data.message
             })
             if (res.data.code == 200){
               //成功后保存后端返回信息
@@ -246,7 +247,7 @@ export default {
             //弹窗显示后端返回的信息（成功、失败原因）
             _this.$message({
               type: res.data.code == 200 ? "success" : "error",
-              message: res.data.message == null ? "服务器未连接" : res.data.message
+              message: res.data.message
             })
             if (res.data.code == 200){
               //成功后保存后端返回信息
