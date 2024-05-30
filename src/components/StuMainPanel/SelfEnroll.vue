@@ -6,23 +6,23 @@
         <span>个人报考<br><br></span>
         <el-form-item label="考试科目/考场:">
           <el-cascader v-model="selectedCourseSchool" :options="examClass" @change="selectExamClass"/>
-          <el-button type="success" @click="confirmCourseSchool">确认科目/考场</el-button>
+          <el-button type="success" :disabled="comfirmDisabled" @click="confirmCourseSchool">确认科目/考场</el-button>
         </el-form-item>
         <el-form-item label="进度流程:">
           <el-steps style="max-width: 1200px" :active="courseStatus.step" align-center>
             <el-step title="未开始报名" description=""/>
             <el-step title="选择科目/考场" description=""/>
-            <el-step title="个人缴费" description=""/>
-            <el-step title="确认报名" description=""/>
-            <el-step title="打印准考证" description=""/>
+            <el-step title="个 人 缴 费 / 完 成 报 名" description=""/>
+<!--            <el-step title="确认报名" description=""/>-->
+            <el-step title="可打印准考证" description=""/>
             <el-step title="考试结束" description=""/>
           </el-steps>
         </el-form-item>
         <el-form-item>
-          <el-button @click="dialogVisible = true" type="success">个人缴费</el-button>
+          <el-button @click="dialogVisible = true" :disabled="payDisabled" type="danger">个人缴费</el-button>
 <!--          <el-button type="success">打印座位通知单</el-button>-->
           <el-button @click="filePrint" type="success">打印考生准考证</el-button>
-          <el-button @click="enrollClick" type="danger">报名</el-button>
+<!--          <el-button @click="enrollClick" type="danger">报名</el-button>-->
         </el-form-item>
       </el-form>
 
@@ -56,12 +56,13 @@ export default {
         idCard: "111111111111111111",
         schoolName: '二仙桥职业学院',
       },
+      //学生已经报考的科目列表
       allCourseStatus: [{
         schoolName: "成都理工大学",
         courseName: "操作系统",
         step: 1
       }],
-      //目前用户已选科目的状态信息
+      //报考界面-目前用户已选科目的状态信息
       courseStatus: {
         schoolName: "",
         courseName: "",
@@ -87,17 +88,43 @@ export default {
       dialogVisible: false
     }
   },
+  computed:{
+    //控制只有进度1的科目/考场可以确认
+    comfirmDisabled(){
+      return this.courseStatus.step != 1 || this.selectedCourseSchool.length == 0
+    },
+    //控制只有进度2时才能进行缴费
+    payDisabled(){
+      return this.courseStatus.step != 2
+    }
+  },
   methods: {
+    //从后端获取当前学生已报考科目
+    getStuSelectedCourse(){
+      var _this = this
+
+      this.$axios({
+        method: "get",
+        url: "/getStudentCoursesHasChosen",
+        params:{idCard: _this.Stu.idCard}
+      }).then(res=>{
+        console.log("--------------从后端获取当前学生已报考科目-----------------")
+        console.log(res)
+        //成功将读取的已选择课程显示
+        if (res.data.code == 200){
+          _this.allCourseStatus = res.data.data
+        }
+      })
+    },
     //点击之后，通过用户id、所选科目、所选学校，获得用户当前进度
     selectExamClass() {
-      // console.log(this.selectedCourseSchool[0])
-      // console.log(this.allCourseStatus[0])
-      var ifFind = false
+      console.log("--------------选择科目/考场----------------")
+      // console.log(this.allCourseStatus)
+      let ifFind = false;
       for(let course of this.allCourseStatus){
-        // console.log(this.selectedCourseSchool)
-        // console.log(course)
         if (course.courseName == this.selectedCourseSchool[0] && course.schoolName == this.selectedCourseSchool[1]){
-          this.courseStatus = course
+          //深拷贝防止后续修改造成的错误
+          this.courseStatus = JSON.parse(JSON.stringify(course))
           ifFind = true
           break
         }
@@ -107,47 +134,63 @@ export default {
           type: "success",
           message: "选择成功"
         })
-        this.courseStatus.step = 2
+        // this.courseStatus.step = 2
+      }
+      else {
+        this.$message({
+          type: "success",
+          message: "当前学校还未报考"
+        })
+        this.courseStatus.step = 1
+        this.courseStatus.courseName = this.selectedCourseSchool[0]
+        this.courseStatus.schoolName = this.selectedCourseSchool[1]
       }
 
     },
-    // 选择科目/考场后，点击确定选择，传到后端：用户id、所选科目、所选学校、状态
+    // 选择科目/考场后，点击确定选择，让进度条前进
     confirmCourseSchool() {
-      var _this = this
-      let datas = {
-        idCard: this.Stu.idCard,
-        courseName: this.selectedCourseSchool[0],
-        schoolName: this.selectedCourseSchool[1],
-        step: 2
-      }
-      //JSON.stringify(datas)
-      this.$confirm("是否确认当前科目/考场","提示",{
-        iconClass: "el-icon-question",//自定义图标样式
-        confirmButtonText: "确认",//确认按钮文字更换
-        cancelButtonText: "取消",//取消按钮文字更换
-        showClose: true,//是否显示右上角关闭按钮
-        type: "warning",//提示类型  success/info/warning/error
-      }).then(()=>{
-        //确认操作
-        this.$axios({
-          method: "post",
-          url: "/addExam",
-          data: JSON.stringify(datas)
-        }).then(res => {
-          //弹窗显示后端返回的信息（成功、失败原因）
-          _this.$message({
-            type: res.data.code == 200 ? "success" : "error",
-            message: res.data.message
-          })
-          //传回信息处理（如果有）
 
-          //及时更新状态--选择学校
-          this.courseStatus.step = 2
 
-        })
-      }).catch(() => {
-        //取消操作
-      })
+      this.courseStatus.step = 2
+      // {
+      //   idCard: this.Stu.idCard,
+      //   courseName: this.selectedCourseSchool[0],
+      //   schoolName: this.selectedCourseSchool[1],
+      //   step: 2
+      // }
+
+      // console.log(datas)
+      // JSON.stringify(datas)
+      // this.$confirm("是否确认当前科目/考场","提示",{
+      //   iconClass: "el-icon-question",//自定义图标样式
+      //   confirmButtonText: "确认",//确认按钮文字更换
+      //   cancelButtonText: "取消",//取消按钮文字更换
+      //   showClose: true,//是否显示右上角关闭按钮
+      //   type: "warning",//提示类型  success/info/warning/error
+      // }).then(()=>{
+      //   //确认操作
+      //   this.$axios({
+      //     method: "post",
+      //     url: "/addExam",
+      //     data: JSON.stringify(datas)
+      //   }).then(res => {
+      //     //弹窗显示后端返回的信息（成功、失败原因）
+      //     _this.$message({
+      //       type: res.data.code == 200 ? "success" : "error",
+      //       message: res.data.message
+      //     })
+      //     //传回信息处理（如果有）
+      //
+      //     //及时更新状态--选择学校
+      //     if (res.data.code == 200){
+      //       this.courseStatus.step = 2
+      //     }
+      //
+      //
+      //   })
+      // }).catch(() => {
+      //   //取消操作
+      // })
 
 
 
@@ -163,7 +206,7 @@ export default {
     //接收后台发来的准考证文件
     filePrint(){
       var _this = this
-
+      // 数据库触发器会在到准考证打印时间后自动改变进度为4，此时可打印准考证
       if (this.courseStatus.step == 4){
         this.$axios({
           method:"post",
@@ -186,11 +229,11 @@ export default {
       else {
         this.$message({
           type:"error",
-          message:"打印失败（请按进度完成）"
+          message:"目前还未开始打印准考证"
         })
       }
     },
-    //点击报名按钮事件
+    //点击报名按钮事件（弃用）
     enrollClick(){
       if(this.courseStatus.step == 3){
         this.$message({
@@ -206,21 +249,38 @@ export default {
       }
 
     },
-    //支付后事件
+    //点击已支付后事件
     afterPay(){
       if(this.courseStatus.step == 2){
-        this.$message({
-          type:"success",
-          message:"缴费成功"
-        })
-        this.courseStatus.step = 3
+        var _this = this
+        let datas = this.courseStatus
+        datas['idCard'] = this.Stu.idCard
 
-      }
-      else {
-        this.$message({
-          type:"error",
-          message:"缴费失败"
+        this.$axios({
+          method: "post",
+          url: "/addExam",
+          data: JSON.stringify(datas)
+        }).then(res => {
+          //弹窗显示后端返回的信息（成功、失败原因）
+          _this.$message({
+            type: res.data.code == 200 ? "success" : "error",
+            message: res.data.message
+          })
+
+          //更新已选列表
+          _this.getStuSelectedCourse()
+          //传回信息处理（如果有）
+
+          //及时更新状态--完成缴费
+          if (res.data.code == 200){
+            this.courseStatus.step = 3
+          }
         })
+        // this.$message({
+        //   type:"success",
+        //   message:"缴费成功"
+        // })
+        // this.courseStatus.step = 3
       }
 
       this.dialogVisible = false
@@ -270,7 +330,9 @@ export default {
     this.Stu = JSON.parse(localStorage.getItem("currentUser"))
     //获得科目/考场列表
     this.getCourseClassroomList()
-  }
+    //从后端获取当前学生已报考科目
+    this.getStuSelectedCourse()
+  },
 
 }
 </script>
