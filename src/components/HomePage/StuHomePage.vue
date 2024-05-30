@@ -18,7 +18,10 @@
                       class="el-icon-user-solid">个人信息
         </el-menu-item>
         <el-menu-item @click="openUrl('/StuHomePage/SelfEnroll')" style="padding-left: 60px;"
-                      class="el-icon-user-solid">个人报考
+                      class="el-icon-s-order">个人报考
+        </el-menu-item>
+        <el-menu-item @click="openUrl('/StuHomePage/ExamScore')" style="padding-left: 60px;"
+                      class="el-icon-s-data">考试成绩
         </el-menu-item>
       </el-menu>
     </el-aside>

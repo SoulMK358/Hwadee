@@ -49,6 +49,12 @@ export default new Router({
       name: 'selfEnroll',
       component: ()=>import('@/components/StuMainPanel/SelfEnroll')
     },
+    {
+      //成绩查看
+      path: '/StuHomePage/ExamScore',
+      name: 'ExamScore',
+      component: ()=>import('@/components/StuMainPanel/ExamScore')
+    },
 
   ]
 })
