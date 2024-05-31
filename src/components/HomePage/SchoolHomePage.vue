@@ -16,7 +16,10 @@
           <el-menu-item index="3" style="color: white;">
             <i class="el-icon-location"></i> <span>创建考试</span>
           </el-menu-item>
-          <el-menu-item index="4" @click="exit" style="color: white;">
+          <el-menu-item index="4" style="color: white;">
+            <i class="el-icon-document-checked"></i> <span>成绩管理</span>
+          </el-menu-item>
+          <el-menu-item index="5" @click="exit" style="color: white;">
             <i class="el-icon-close"></i> <span>退出系统</span>
           </el-menu-item>
         </el-menu>
@@ -36,6 +39,8 @@
 import InformationPageVue from '../School/InformationPage.vue';
 import ApplyPageVue from '../School/ApplyPage.vue';
 import EnrollmentPageVue from '../School/EnrollmentPage.vue';
+import ScoreManagePageVue from '../School/ScoreManagePage.vue';
+
 
 export default {
   name: "SchoolHomePage",
@@ -49,6 +54,7 @@ export default {
     InformationPageVue,
     ApplyPageVue,
     EnrollmentPageVue,
+    ScoreManagePageVue
   },
   methods: {
     handleSelect(key) {
@@ -58,6 +64,8 @@ export default {
         this.currentComponent = 'ApplyPageVue';
       } else if (key == '3') {
         this.currentComponent = 'EnrollmentPageVue';
+      }else if (key == '4') {
+        this.currentComponent = 'ScoreManagePageVue';
       }
     },
 
