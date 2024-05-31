@@ -9,7 +9,7 @@
           <el-button type="success" :disabled="comfirmDisabled" @click="confirmCourseSchool">确认科目/考场</el-button>
         </el-form-item>
         <el-form-item label="进度流程:">
-          <el-steps style="max-width: 1200px" :active="courseStatus.step" align-center>
+          <el-steps style="max-width: 1200px" finish-status="success" :active="courseStatus.step" align-center>
             <el-step title="未开始报名" description=""/>
             <el-step title="选择科目/考场" description=""/>
             <el-step title="个 人 缴 费 / 完 成 报 名" description=""/>
