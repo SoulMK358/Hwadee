@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-container style="height: 100vh;">
+    <el-container style="height: 95vh;">
       <!-- 左侧菜单栏 -->
       <el-aside width="200px" style="background-color: rgb(18, 90, 160); color: white;">
         <el-menu :default-active="activeIndex" @select="handleSelect" class="el-menu-vertical-demo" style="background-color: rgb(18, 90, 160); color: white;">
@@ -11,7 +11,7 @@
             <i class="el-icon-document"></i> <span>院校信息</span>
           </el-menu-item>
           <el-menu-item index="2" style="color: white;">
-            <i class="el-icon-edit"></i> <span>批量报考</span>
+            <i class="el-icon-edit"></i> <span>院校报考</span>
           </el-menu-item>
           <el-menu-item index="3" style="color: white;">
             <i class="el-icon-location"></i> <span>创建考试</span>
