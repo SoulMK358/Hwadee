@@ -19,10 +19,11 @@
 
       <!-- 主要内容 -->
       <el-main>
-        <div>
-          <h2>院校报考</h2>
-          <p>填写表格内容，报名考试。</p>
-        </div>
+<!--        <div>-->
+<!--          <h2>院校报考</h2>-->
+<!--          <p>填写表格内容，报名考试。</p>-->
+<!--        </div>-->
+        <br><br>
         <el-card class="large-card">
           <el-form :model="collectiveExamForm" label-width="120px">
 

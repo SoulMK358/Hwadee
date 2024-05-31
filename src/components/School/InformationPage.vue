@@ -19,10 +19,11 @@
 
       <!-- 主要内容 -->
       <el-main>
-        <div>
-          <h2>院校信息</h2>
-          <p>填写表格内容，创建信息。</p>
-        </div>
+<!--        <div>-->
+<!--          <h2>院校信息</h2>-->
+<!--          <p>填写表格内容，创建信息。</p>-->
+<!--        </div>-->
+        <br><br>
         <el-card class="large-card">
           <el-form :model="groupInfoForm" label-width="120px">
             <el-form-item label="用户身份证">
