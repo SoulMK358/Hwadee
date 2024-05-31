@@ -379,7 +379,7 @@ export default {
 <style scoped>
 .my-el-main{
   /* 设置高度为视口高度 */
-  height: 100vh;
+  height: 97vh;
   /* 设置宽度为100% */
   width: 100%;
   /* 背景图片 */
@@ -417,7 +417,7 @@ export default {
   background: rgb(247,250,255);
   padding: 30px;
   width: 350px;
-  height: 380px;
+  height: 400px;
 }
 
 .el-login {

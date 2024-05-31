@@ -39,7 +39,7 @@ export default {
 <style scoped lang="css">
   .my-el-main {
     /* 设置高度为视口高度 */
-    height: 100vh;
+    height: 97vh;
     /* 设置宽度为100% */
     width: 100%;
     /* 背景图片 */
