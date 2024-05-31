@@ -10,7 +10,7 @@
         </el-form-item>
         <el-form-item label="进度流程:">
           <el-steps style="max-width: 1200px" finish-status="success" :active="courseStatus.step" align-center>
-            <el-step title="未开始报名" description=""/>
+            <el-step title="开始报名" description=""/>
             <el-step title="选择科目/考场" description=""/>
             <el-step title="个 人 缴 费 / 完 成 报 名" description=""/>
 <!--            <el-step title="确认报名" description=""/>-->
