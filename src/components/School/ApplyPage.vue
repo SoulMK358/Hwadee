@@ -36,45 +36,34 @@
                 <el-steps :active="step" finish-status="success" style="width: 900px;" align-center>
                   <el-step title="开始报名"></el-step>
                   <el-step title="选择科目"></el-step>
-                  <el-step title="学校缴费"></el-step>
+                  <el-step title="上传名单"></el-step>
+                  <el-step title="完成缴费"></el-step>
                   <el-step title="报名成功"></el-step>
-                  <el-step title="成绩公布"></el-step>
                 </el-steps>
             </el-form-item>
 
             <el-form-item label="名单上传">
-<!--              <el-upload-->
-<!--                action="#"-->
-<!--                list-type="text"-->
-<!--                :on-remove="handleRemove"-->
-<!--                :on-success="handleSuccess"-->
-<!--                :before-upload="beforeUpload"-->
-<!--                :http-request="uploadFile"-->
-<!--                :file-list="fileList"-->
-<!--                :auto-upload="false"-->
-<!--                :headers="headers"-->
-<!--                drag>-->
-<!--                <i class="el-icon-upload"></i>-->
-<!--                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em><br>Upload.xlsx</div>-->
-<!--              </el-upload>-->
               <el-upload
                 class="upload-demo" action
+                :disabled="uploadDisabled"
                 :http-request="uploadFile"
                 ref="upload"
                 :limit="fileLimit"
                 :on-remove="handleRemove"
+                :on-exceed="handleExceed"
+                :on-success="handleSuceess"
                 :file-list="fileList"
                 :before-upload="beforeUpload"
-                :show-file-list="false"
+                :show-file-list="true"
                 :headers="headers">
-              <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
+              <el-button @click="onUpload" class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
               </el-upload>
 
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" @click="dialogVisible = true" style="position: relative; left: 320px;">集体缴费</el-button>
-              <el-button type="danger" @click="handleRegister">报名</el-button>
+              <el-button type="primary" @click="onPayButton" style="position: relative; left: 320px;">集体缴费</el-button>
+              <el-button type="danger" :disabled="step == 4" @click="handleRegister">报名</el-button>
             </el-form-item>
 
           </el-form>
@@ -108,12 +97,14 @@ export default {
   name: "ApplyPage",
   data() {
     return {
+      //学校、学校管理员信息
       groupInfoForm: {
         idCard:'',
         schoolerAccount: '',
         schoolName: '',
         schoolId: '',
       },
+      //报考表单信息存储
       collectiveExamForm: {
         examType: '',
       },
@@ -124,7 +115,7 @@ export default {
       // 运行上传文件大小，单位 M
       fileSize: 50,
       // 附件数量限制
-      fileLimit: 5,
+      fileLimit: 1,
       //请求头
       headers: { "Content-Type": "multipart/form-data" },
       //用于保存后端传回的可选科目
@@ -132,24 +123,44 @@ export default {
         label:"123",
         value:"2323",
       }],
-      schoolMsg:'',
+      //学校信息暂存
+      // schoolMsg:'',
       // 控制弹出框显示隐藏
       dialogVisible: false,
-
-      step:1
+      // 院校报考进度控制
+      step:1,
+      //上传文件暂存
+      uploadData: new FormData()
     };
   },
+  computed:{
+    //控制上传附件操作不能在进度1进行
+    uploadDisabled(){
+      return this.step == 1
+    }
+  },
   methods: {
-    handleCollectivePayment() {
-      console.log('集体缴费');
-    },
-    handleRegister() {
+    //从选择框选择课程事件
+    courseSelected(){
       this.$message({
         type:"success",
-        message:"报名成功"
+        message:"选择成功"
       })
-      this.step = 4
-      console.log('报名');
+      //进度条切回到2
+      this.step = 2
+      //删除上传名单文件
+      this.fileList.pop()
+
+    },
+    //点击上传附件事件
+    onUpload(){
+      if(this.step == 1){
+        this.$message({
+          type:"error",
+          message:"目前不可上传附件（请按进度完成报名）"
+        })
+      }
+
     },
     //上传文件前检查格式
     beforeUpload(file){
@@ -168,7 +179,7 @@ export default {
           return true;
         }
         else {
-          this.$message.error("上传文件格式不正确!");
+          this.$message.error("上传文件格式不正确!")
           return false;
         }
       }
@@ -177,17 +188,103 @@ export default {
     uploadFile(item){
       var _this = this
       this.$message('文件上传中........')
-      //上传文件的需要formdata类型;所以要转
-      let FormDatas = new FormData()
-      FormDatas.append('file',item.file);
-      FormDatas.append('courseName', this.collectiveExamForm.examType)
-      FormDatas.append('originSchoolName', this.schoolMsg.schoolName)
+      //上传文件的需要formdata类型;在data中声明好，在此处以键值对形式存入,暂存不上传
+      this.uploadData.append('file',item.file);
+      this.uploadData.append('courseName', this.collectiveExamForm.examType)
+      this.uploadData.append('originSchoolName', this.groupInfoForm.schoolName)
+
+      this.step = 3
+
+      // console.log(this.uploadData.get('file'))
+      // this.$axios({
+      //   method: 'post',
+      //   url: '/groupApply',
+      //   headers: this.headers,
+      //   timeout: 30000,
+      //   data: FormDatas
+      // }).then(res=>{
+      //   console.log(res)
+      //   _this.$message({
+      //     type:res.data.code == 200 ? "success" :"error",
+      //     message: res.data.message
+      //   })
+      //   if(res.data.code == 200){
+      //     _this.collectiveExamForm.examType = {
+      //       examType: ''
+      //     }
+      //   }
+      // })
+    },
+    //移除上传文件
+    handleRemove(file, fileList) {
+      console.log('移除文件', file, fileList);
+      this.$message({
+        type:"success",
+        message:"文件已移除"
+      })
+      this.step = 2
+    },
+    //上传文件超过数量限制事件
+    handleExceed(){
+      this.$message({
+        type:"error",
+        message:"只能上传一个附件"
+      })
+    },
+    //上传文件成功事件
+    handleSuceess(){
+      this.$message({
+        type:"success",
+        message:"文件上传成功"
+      })
+    },
+    //集体缴费按钮点击事件
+    onPayButton(){
+      if(this.step != 3){
+        this.$message({
+          type:"error",
+          message:"当前进度不可缴费（请按进度完成报名）"
+        })
+        return
+      }
+
+      this.dialogVisible = true
+    },
+    //付款对话框取消事件
+    handleClose() {
+      this.$confirm('确定要关闭弹出框吗？')
+        .then(() => {
+          this.dialogVisible = false;
+        })
+        .catch(() => {});
+    },
+    //缴费对话框点击已支付事件
+    afterPay(){
+      var _this = this
+      this.$message({
+        type:"success",
+        message:"支付成功"
+      })
+      this.dialogVisible = false
+      this.step = 4
+
+      setTimeout(function (){
+        _this.$message("报名中......")
+        _this.handleRegister()
+      },500)
+
+    },
+
+    //报名事件--上传文件
+    handleRegister() {
+      var _this = this
+
       this.$axios({
         method: 'post',
         url: '/groupApply',
         headers: this.headers,
         timeout: 30000,
-        data: FormDatas
+        data: this.uploadData
       }).then(res=>{
         console.log(res)
         _this.$message({
@@ -195,31 +292,13 @@ export default {
           message: res.data.message
         })
         if(res.data.code == 200){
+          _this.step = 5
           _this.collectiveExamForm.examType = {
             examType: ''
           }
+
         }
-        // if(res.data.id != '' || res.data.id != null){
-        //   this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
-        //   let i = this.fileList.indexOf(item.file)
-        //   this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
-        //   if(this.fileList.length > 0){//如果上传了附件就把校验规则给干掉
-        //     this.fileflag = false;
-        //     this.$set(this.rules.url,0,'')
-        //   }
-        //   //this.handleSuccess();
-        // }
       })
-    },
-    handleRemove(file, fileList) {
-      console.log('移除文件', file, fileList);
-    },
-    handleClose() {
-      this.$confirm('确定要关闭弹出框吗？')
-        .then(() => {
-          this.dialogVisible = false;
-        })
-        .catch(() => {});
     },
 
     //从后端获得已创建的考试科目
@@ -240,29 +319,15 @@ export default {
       })
     },
 
-    courseSelected(){
-      this.$message({
-        type:"success",
-        message:"选择成功"
-      })
-      this.step = 2
-    },
 
-    afterPay(){
-      this.$message({
-        type:"success",
-        message:"支付成功"
-      })
-      this.dialogVisible = false
-      this.step = 3
-    },
 
   },
   mounted() {
-    //从localStorage取学校相关信息
-    this.schoolMsg = JSON.parse(localStorage.getItem("currentSchool"))
+    // //从localStorage取学校相关信息
+    // this.schoolMsg = JSON.parse(localStorage.getItem("currentSchool"))
     //从localStorage读取相关信息
     this.groupInfoForm = JSON.parse(localStorage.getItem("currentSchool"))
+
 
     this.getCourseList()
   }
