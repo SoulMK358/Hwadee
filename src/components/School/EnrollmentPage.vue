@@ -1,10 +1,10 @@
-<!-- 报名报考 -->
+<!-- 创建考试科目 -->
 <template>
   <div>
     <el-container style="height: 100vh;">
       <!-- 头部 -->
       <el-header style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
-        <div style="font-size: 20px; font-weight: bold;">报名报考</div>
+        <div style="font-size: 20px; font-weight: bold;">创建考试</div>
         <el-dropdown>
           <span class="el-dropdown-link">
             <i class="el-icon-user"></i> 你好，{{groupInfoForm.schoolerAccount}} <i class="el-icon-arrow-down el-icon--right"></i>
@@ -19,7 +19,7 @@
       <!-- 主要内容 -->
       <el-main>
         <div>
-          <h2>报名报考</h2>
+          <h2>创建考试</h2>
           <p>填写表格内容，创建考试。</p>
         </div>
         <el-card>
@@ -35,68 +35,31 @@
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form-item label="报名报考时限" required>
-                  <el-date-picker v-model="form.startTime" type="datetime" placeholder="开始日期时间"></el-date-picker>
+                <el-form-item label="开始报名时间" required>
+                  <el-date-picker v-model="form.startTime"
+                                  type="datetime"
+                                  :picker-options="startPickerOptions"
+                                  placeholder="开始日期时间">
+                  </el-date-picker>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="结束" required>
-                  <el-date-picker v-model="form.endTime" type="datetime" placeholder="结束日期时间"></el-date-picker>
+                <el-form-item label="结束报名时间" required>
+                  <el-date-picker v-model="form.endTime"
+                                  type="datetime"
+                                  :disabled = "endTimeDisabled"
+                                  :picker-options="endPickerOptions"
+                                  placeholder="结束日期时间">
+                  </el-date-picker>
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="24">
-<!--                <el-form-item label="设置开考考区" required>-->
-<!--                  <el-select v-model="form.examArea" placeholder="请选择开考考区">-->
-<!--                    <el-option label="考区一" value="1"></el-option>-->
-<!--                    <el-option label="考区二" value="2"></el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
+
               </el-col>
             </el-row>
-<!--            <el-row :gutter="20">-->
-<!--              <el-col :span="12">-->
-<!--                <el-form-item label="延长报考时限" required>-->
-<!--                  <el-select v-model="form.extendTime" placeholder="请选择延长报考时限">-->
-<!--                    <el-option label="时限一" value="1"></el-option>-->
-<!--                    <el-option label="时限二" value="2"></el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--              <el-col :span="12">-->
-<!--                <el-form-item label="是否延长时间" required>-->
-<!--                  <el-radio-group v-model="form.isExtended">-->
-<!--                    <el-radio label="yes">是</el-radio>-->
-<!--                    <el-radio label="no">否</el-radio>-->
-<!--                  </el-radio-group>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
-<!--            <el-row :gutter="20" style="align-items: center;">-->
-<!--              <el-col :span="20">-->
-<!--                <el-form-item label="进度查看和统计" required>-->
-<!--                  <div class="progress-container">-->
-<!--                    <el-steps :active="form.step" finish-status="success" style="width: 600px;" align-center>-->
-<!--                      <el-step title="创建考试"></el-step>-->
-<!--                      <el-step title="报名结束"></el-step>-->
-<!--                      <el-step title="考生考试"></el-step>-->
-<!--                      <el-step title="成绩公布"></el-step>-->
-<!--                    </el-steps>-->
-<!--                  </div>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
-<!--            <el-row :gutter="20">-->
-<!--              <el-col :span="18">-->
-<!--                <el-form-item label="设置白名单" required>-->
-<!--                  <el-input v-model="form.whitelist" placeholder="请输入白名单" style="width: calc(100% - 100px);"></el-input>-->
-<!--                </el-form-item>-->
-<!--              </el-col>-->
-<!--              <el-col :span="6" style="display: flex; align-items: center;">-->
-<!--                <el-button type="default" style="border: 1px solid #409eff; color: #409eff;" @click="handleSubmit">提交</el-button>-->
-<!--              </el-col>-->
-<!--            </el-row>-->
+
             <el-row>
               <el-col :span="24" style="text-align: center;">
                 <el-button type="default" style="border: 1px solid #409eff; color: #409eff;" @click="handleSave">保存</el-button>
@@ -131,8 +94,24 @@ export default {
         label:"123",
         value:"2323",
       }],
-      schoolName:''
+      schoolName:'',
+
+      startPickerOptions:{
+        disabledDate: (time) =>{
+          return time.getTime() <= Date.now()-1000 * 3600 * 24;
+        }
+      },
+      endPickerOptions:{
+        disabledDate: (time) =>{
+          return time.getTime() < this.form.startTime || time.getTime() <= Date.now();
+        }
+      }
     };
+  },
+  computed:{
+    endTimeDisabled(){
+      return this.form.startTime == ''
+    }
   },
   methods: {
     // 提交按钮,点击后提交信息到后端
