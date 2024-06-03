@@ -16,11 +16,17 @@
               <el-form-item label="密码">
                 <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
                 <el-link @click="statusChange(3)" type="primary" v-if="role=='学生'" class="forgot-password-link" style="margin-left: -45px;">修改密码</el-link>
+                <el-link @click="statusChange(2)" type="primary" v-if="role=='学生'" class="forgot-password-link" style="margin-left: 15px;">注册</el-link>
               </el-form-item>
               <el-form-item label-width="4px">
                 <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
-                <el-button type="primary" v-if="role=='学生'" @click="statusChange(2)">注册</el-button>
+                &nbsp&nbsp
+                <el-button type="primary" v-if="role=='学生'" @click="startCamera">人脸识别登录</el-button>
+                <br>
+<!--                <el-button type="primary" v-if="role=='学生'" @click="statusChange(2)">注册</el-button>-->
                 <el-button type="primary" @click="backEvent">返回选择身份</el-button>
+                <el-button type="danger" v-if="role=='学生'" @click="stopCamera">关闭摄像头</el-button>
+<!--                <el-button @click="loginByFace"> test </el-button>-->
               </el-form-item>
             </el-form>
           </el-card>
@@ -85,6 +91,13 @@
             </el-form>
           </el-card>
         </el-aside>
+
+        <el-main>
+          <div>
+            <video ref="video" width="0" height="0" autoplay></video>
+            <canvas ref="canvas" v-show="cameraStatus" width="640" height="480" style="display: flex; margin-left: 200px"></canvas>
+          </div>
+        </el-main>
       </el-container>
     </el-main>
   </el-container>
@@ -95,6 +108,19 @@
 export default {
   data() {
     return {
+      //摄像机流与绘制暂存对象
+      stream: null,
+      video: null,
+      canvas: null,
+      ctx: null,
+      //控制摄像机显示
+      cameraStatus:false,
+      //循环绘制事件对象
+      canvasId: null,
+      //循环人脸识别登录事件对象
+      faceLoginId:null,
+
+
       // 不同入口进入的身份--学生、学校、管理员
       role: this.params,
       // 控制登录1、注册2、修改密码3 界面的显示
@@ -322,6 +348,7 @@ export default {
     backEvent(){
       this.$router.push('/')
     },
+    //修改密码
     changePassword(){
       var _this = this
 
@@ -360,6 +387,88 @@ export default {
       }).catch(() => {
         //取消操作
       })
+    },
+    //调用摄像头
+    startCamera() {
+      this.cameraStatus=true;
+      this.video = this.$refs.video;
+      this.canvas = this.$refs.canvas;
+      this.ctx = this.canvas.getContext('2d');
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          this.stream = stream;
+          this.video.srcObject = stream;
+
+          // 开始绘制翻转的视频帧
+          this.canvasId = setInterval(this.flipAndDraw, 20); // 每20毫秒绘制一次
+          // 开始人脸识别登录尝试
+          this.faceLoginId = setInterval(this.loginByFace, 2000);//每2s进行一次登录尝试
+        })
+        .catch(error => {
+          console.error("Something went wrong!", error);
+        });
+    },
+    //翻转摄像头图像
+    flipAndDraw() {
+      // 清空画布
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      // 绘制翻转的视频帧
+      this.ctx.save(); // 保存当前的绘图状态
+      this.ctx.translate(this.canvas.width, 0); // 移动画布
+      this.ctx.scale(-1, 1); // 水平翻转
+      this.ctx.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.restore(); // 恢复之前保存的绘图状态
+    },
+    //关闭摄像头
+    stopCamera() {
+
+      if (this.stream) {
+        // 停止视频流的所有轨道
+        this.stream.getTracks().forEach(track => track.stop());
+        // 清除视频源
+        this.video.srcObject = null;
+        // 重置 stream 属性
+        this.stream = null;
+        //关闭20ms执行的摄像头翻转绘制函数
+        clearInterval(this.canvasId);
+        //关闭每2s执行的登录尝试函数
+        clearInterval(this.faceLoginId);
+
+        this.cameraStatus = false
+      }
+
+    },
+    //人脸识别登录
+    loginByFace(){
+      // 从 canvas 获取图像数据
+      this.canvas.toBlob((blob)=>{
+        var formData = new FormData();
+        formData.append('file', blob)
+
+        var _this = this
+
+        this.$axios({
+          method:"post",
+          url:"/face/faceRecognition",
+          data: formData
+        }).then(res=>{
+          console.log(res)
+
+          _this.$message({
+            type: res.data.isSuccess ? "success" : "error",
+            duration: 1000,
+            message: res.data.message
+          })
+
+
+        })
+        // const url = URL.createObjectURL(blob);
+        // var link = document.createElement('a');
+        // link.href = url;
+        // link.download = 'image.jpeg'; // 设置下载文件名
+        // link.click(); // 触发下载
+      })
     }
 
 
@@ -368,6 +477,9 @@ export default {
   },
   mounted() {
 
+  },
+  beforeDestroy() {
+    this.stopCamera();
   },
   created() {
     this.role =  JSON.parse(this.$route.query.params).name // 获取从router中传过来的参数
