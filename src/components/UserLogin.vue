@@ -394,6 +394,9 @@ export default {
       this.video = this.$refs.video;
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext('2d');
+
+      this.$message("开始识别人脸")
+
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
           this.stream = stream;
@@ -402,7 +405,7 @@ export default {
           // 开始绘制翻转的视频帧
           this.canvasId = setInterval(this.flipAndDraw, 20); // 每20毫秒绘制一次
           // 开始人脸识别登录尝试
-          this.faceLoginId = setInterval(this.loginByFace, 2000);//每2s进行一次登录尝试
+          this.faceLoginId = setInterval(this.loginByFace, 4000);//每4s进行一次登录尝试
         })
         .catch(error => {
           console.error("Something went wrong!", error);
@@ -460,8 +463,15 @@ export default {
             duration: 1000,
             message: res.data.message
           })
-
-
+          //登录成功，跳转界面
+          if (res.data.code == 200){
+            //保存当前用户的个人相关信息，以便后续使用
+            localStorage.setItem("currentUser",JSON.stringify(res.data.data))
+            _this.stopCamera()
+            setTimeout(function (){
+              _this.$router.push("/StuHomePage")
+            },800)
+          }
         })
         // const url = URL.createObjectURL(blob);
         // var link = document.createElement('a');
