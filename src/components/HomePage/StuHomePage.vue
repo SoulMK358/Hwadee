@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 700px; border: 10px solid #eee">
+  <el-container style="height: 690px; border: 10px solid #eee">
     <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
       <el-menu router>
 <!--        <template v-for="x in menus">-->
