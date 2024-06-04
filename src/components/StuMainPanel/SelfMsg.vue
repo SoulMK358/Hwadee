@@ -124,7 +124,7 @@ export default {
     //调用摄像头
     startCamera() {
       this.cameraStatus=true;
-      this.cognitionStatus = !this.cognitionStatus
+      this.cognitionStatus = false
       this.video = this.$refs.video;
       this.canvas = this.$refs.canvas;
       this.ctx = this.canvas.getContext('2d');
@@ -171,7 +171,7 @@ export default {
 
         this.cameraStatus = false
 
-        this.cognitionStatus = !this.cognitionStatus
+        this.cognitionStatus = true
       }
 
     },
