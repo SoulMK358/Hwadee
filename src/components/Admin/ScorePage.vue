@@ -19,31 +19,28 @@
 
       <!-- 主要内容 -->
       <el-main>
-        <div style="margin-bottom: 20px;">
-          <h2>考试分数</h2>
-          <p>查看考生分数，进行分数管理。</p>
-        </div>
 
-        <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px;">
-          <el-input v-model="singleData.idCard" placeholder="请输入身份证号查询考生分数" style="margin-right: 10px;"></el-input>
-          <el-button type="primary" @click="inquiry" style="margin-right: 10px;">查询</el-button>
+        <div style="display: flex;  align-items: center; margin-bottom: 20px;">
+          <el-select v-show="false" v-model="schoolName" @change="getCourseList" placeholder="请选择查询学校" >
+            <el-option v-for="school in schools" :key="school.value" :label="school.schoolName" :value="school.schoolName"></el-option>
+          </el-select>&nbsp&nbsp&nbsp
+          <el-select v-model="courseName" placeholder="请选择查询科目" >
+            <el-option v-for="course in courses" :key="course.value" :label="course.label" :value="course.value"></el-option>
+          </el-select>&nbsp&nbsp&nbsp
+          <el-button type="primary" @click="getScoreList" style="margin-right: 10px;">查询</el-button>
           <el-button type="success" @click="exportData">导出</el-button>
         </div>
 
-        <el-card style="margin: 0 auto; width: 90%; padding: 0;">
-          <div style="display: flex; justify-content: center; align-items: center;">
+        <el-card style="margin: auto; width: 99%; padding: 0;">
+          <div style="display: flex; justify-content: center; align-items: center; margin-left: 140px">
             <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 100%;" :row-style="{'text-align': 'center'}">
               <el-table-column v-if="false" prop="punishId" label="punishId" width="100"></el-table-column>
               <el-table-column prop="idCard" label="身份证号" width="265" align="center">
-                <template slot-scope="scope">
-                  <span>{{ scope.row.idCard }}</span>
-                </template>
               </el-table-column>
               <el-table-column prop="stuName" label="姓名" width="140" align="center"></el-table-column>
-              <el-table-column prop="schoolName" label="学校" width="160" align="center"></el-table-column>
-              <el-table-column prop="examRoomName" label="考场" width="160" align="center"></el-table-column>
+              <el-table-column prop="schoolName" label="考试学校" width="160" align="center"></el-table-column>
               <el-table-column prop="courseName" label="科目" width="160" align="center"></el-table-column>
-              <el-table-column prop="punishReason" label="分数" width="175" align="center"></el-table-column>
+              <el-table-column prop="stuMark" label="分数" width="175" align="center"></el-table-column>
             </el-table>
           </div>
 
@@ -72,24 +69,20 @@ export default {
     return {
       //添加栏信息保存
       singleData:{
-        punishId:1,
-        idCard:'',
-        stuName:'',
-        schoolName:'',
-        examRoomName:'',
-        punishReason:'',
-        courseName:''
+        idCard:'xxxxxx',
+        stuName:'xx',
+        schoolName:'xxx',
+        stuMark:'xxx',
+        courseName:'xx',
       },
       //从后端获取用于展示的栏
       tableData: [
         {
-          punishId:1,
-          idCard:'xxxxxx',
-          stuName:'xx',
-          schoolName:'xxx',
-          examRoomName:'xxxxxxxxx',
-          punishReason:'xxx',
-          courseName:'xx',
+          idCard:'',
+          stuName:'',
+          schoolName:'',
+          stuMark:'',
+          courseName:'',
         },
         // 添加更多数据
       ],
@@ -100,14 +93,30 @@ export default {
       //当前页 刷新后默认显示第一页
       currentPage: '1',
       //每一页显示的数据量 此处每页显示6条数据
-      pageSize: '6',
+      pageSize: '7',
+
+      //从后台拉取学校信息的临时表格
+      schools: [
+        {
+          schoolId: 1,
+          schoolName: '二仙桥职业学院'
+        },
+        {
+          schoolId: 2,
+          schoolName: '成都恐龙专科学校'
+        }],
+      //选择学校
+      schoolName: '成都理工大学',
+      //用于保存后端传回的可选科目
+      courses:[{
+        label:"",
+        value:"",
+      }],
+      //选择课程
+      courseName:''
     };
   },
   methods: {
-    //查询按钮
-    inquiry() {
-
-    },
     // 导出数据为excle表格
     exportData() {
       // 导出按钮
@@ -121,9 +130,8 @@ export default {
           "身份证号":value.idCard,
           "姓名":value.stuName,
           "学校":value.schoolName,
-          "考场":value.examRoomName,
           "科目":value.courseName,
-          "考试分数":value.punishReason,
+          "考试分数":value.stuMark,
         }
         data.push(t);
       }
@@ -138,15 +146,47 @@ export default {
       // 下载Excel文件
       XLSX.writeFile(workbook, '考试分数.xlsx');
     },
-    //获得分数名单
+    //根据科目-获得分数名单
     getScoreList(){
       var _this = this
       this.$axios({
-        method:"post",
-        url:"/punishList"
+        method:"get",
+        url:"/studentGrade/getStuMarkByCourse",
+        params:{courseName:this.courseName}
       }).then(res=>{
         console.log(res.data)
-        _this.tableData = res.data
+        _this.tableData = res.data.data
+      })
+    },
+    //获取学校列表
+    getSchoolList(){
+      console.log("getSchoolList")
+      var _this = this
+      this.$axios({
+        method:"get",
+        url:"/getSchoolList"
+      }).then(res=>{
+        //console.log(res)
+        var result = res.data
+        _this.schools = result
+        console.log(_this.schools)
+      })
+    },
+    //从后端获得已创建的考试科目
+    getCourseList(){
+      var _this = this
+
+      this.$axios({
+        method:"get",
+        url:"/getCoursesBySchool?schoolName=" + _this.schoolName
+      }).then(res=>{
+        console.log(res)
+        //弹窗显示后端返回的信息（成功、失败原因）
+        // _this.$message({
+        //   type: res.data.code == 200 ? "success" : "error",
+        //   message: res.data.message
+        // })
+        _this.courses = res.data
       })
     },
     //点击按钮切换页面
@@ -159,6 +199,8 @@ export default {
     var parse = JSON.parse(localStorage.getItem("currentAdmin"))
     this.userName = parse.adminName
     this.getScoreList()
+    // this.getSchoolList()
+    this.getCourseList()
   }
 };
 </script>
