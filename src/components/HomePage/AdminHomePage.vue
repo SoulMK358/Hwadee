@@ -4,12 +4,9 @@
       <!-- 左侧菜单栏 -->
       <el-aside width="200px" style="background-color: rgb(18, 90, 160); color: white;">
         <el-menu :default-active="activeIndex" @select="handleSelect" class="el-menu-vertical-demo" style="background-color: rgb(18, 90, 160); color: white;">
-          <el-menu-item index="0" style="color: white; text-align: center;">
+         <el-menu-item index="0" style="color: white; text-align: center;">
             <i class="el-icon-menu"></i>
           </el-menu-item>
-<!--          <el-menu-item index="1" style="color: white;">-->
-<!--            <i class="el-icon-document"></i> 报名报考管理-->
-<!--          </el-menu-item>-->
           <el-menu-item index="1" style="color: white;">
             <i class="el-icon-edit"></i> 编场管理
           </el-menu-item>
@@ -17,12 +14,12 @@
             <i class="el-icon-location"></i> 考点库管理
           </el-menu-item>
           <el-menu-item index="3" style="color: white;">
-            <i class="el-icon-tickets"></i> 评卷管理
+            <i class="el-icon-trophy"></i> 考试分数管理
           </el-menu-item>
           <el-menu-item index="4" style="color: white;">
             <i class="el-icon-warning"></i> 违规上报管理
           </el-menu-item>
-          <el-menu-item index="5" @click="exit" style="color: white;">
+          <el-menu-item @click="exit" style="color: white;">
             <i class="el-icon-close"></i> 退出系统
           </el-menu-item>
         </el-menu>
@@ -41,7 +38,7 @@
 <script>
 import MarshallingPageVue from '../Admin/MarshallingPage.vue';
 import TestLibraryPageVue from '../Admin/TestLibraryPage.vue';
-import MarkingPageVue from '../Admin/MarkingPage.vue';
+import ScorePageVue from '../Admin/ScorePage.vue';
 import ViolationPageVue from '../Admin/ViolationPage.vue';
 
 export default {
@@ -55,9 +52,9 @@ export default {
     };
   },
   components: {
-    MarkingPageVue,
     MarshallingPageVue,
     TestLibraryPageVue,
+    ScorePageVue,
     ViolationPageVue
   },
   methods: {
@@ -67,7 +64,7 @@ export default {
       } else if (key == '2') {
         this.currentComponent = 'TestLibraryPageVue';
       } else if (key == '3') {
-        this.currentComponent = 'MarkingPageVue';
+        this.currentComponent = 'ScorePageVue';
       } else if (key == '4') {
         this.currentComponent = 'ViolationPageVue';
       }
