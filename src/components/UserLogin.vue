@@ -92,7 +92,7 @@
           </el-card>
         </el-aside>
 
-        <el-main>
+        <el-main v-show="cameraStatus">
           <div>
             <video ref="video" width="0" height="0" autoplay></video>
             <canvas ref="canvas" v-show="cameraStatus" width="640" height="480" style="display: flex; margin-left: 200px"></canvas>
