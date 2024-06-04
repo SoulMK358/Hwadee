@@ -10,9 +10,9 @@
           <el-menu-item index="1" style="color: white;">
             <i class="el-icon-edit"></i> 编场管理
           </el-menu-item>
-          <el-menu-item index="2" style="color: white;">
-            <i class="el-icon-location"></i> 考点库管理
-          </el-menu-item>
+<!--          <el-menu-item index="2" style="color: white;">-->
+<!--            <i class="el-icon-location"></i> 考点库管理-->
+<!--          </el-menu-item>-->
           <el-menu-item index="3" style="color: white;">
             <i class="el-icon-trophy"></i> 考试分数管理
           </el-menu-item>
