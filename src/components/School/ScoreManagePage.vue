@@ -6,7 +6,7 @@
       <div style="font-size: 20px; font-weight: bold;">成绩管理</div>
       <el-dropdown>
         <span class="el-dropdown-link">
-          <i class="el-icon-user"></i> 你好，{{ groupInfoForm.schoolerAccount }} <i class="el-icon-arrow-down el-icon--right"></i>
+          <i class="el-icon-user"></i> 你好，{{ groupInfoForm.schoolName}} <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>查看</el-dropdown-item>

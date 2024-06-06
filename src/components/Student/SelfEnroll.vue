@@ -1,48 +1,70 @@
+<!-- 个人报考 -->
 <template>
-  <div class="el-card-outside">
-    <!--      报考学校信息栏目-->
-    <el-card class="el-card-aimSchool">
-      <el-form size="large" label-width="auto">
-        <span>个人报考<br><br></span>
-        <el-form-item label="考试科目/考场:">
-          <el-cascader v-model="selectedCourseSchool" :options="examClass" @change="selectExamClass"/>
-          <el-button type="success" :disabled="comfirmDisabled" @click="confirmCourseSchool">确认科目/考场</el-button>
-        </el-form-item>
-        <el-form-item label="进度流程:">
-          <el-steps style="max-width: 1200px" finish-status="success" :active="courseStatus.step" align-center>
-            <el-step title="开始报名" description=""/>
-            <el-step title="选择科目/考场" description=""/>
-            <el-step title="个 人 缴 费 / 完 成 报 名" description=""/>
-<!--            <el-step title="确认报名" description=""/>-->
-            <el-step title="可打印准考证" description=""/>
-            <el-step title="考试结束" description=""/>
-          </el-steps>
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="dialogVisible = true" :disabled="payDisabled" type="danger">个人缴费</el-button>
-<!--          <el-button type="success">打印座位通知单</el-button>-->
-          <el-button @click="filePrint" type="success">打印考生准考证</el-button>
-<!--          <el-button @click="enrollClick" type="danger">报名</el-button>-->
-        </el-form-item>
-      </el-form>
+  <el-container style="height: 100vh;">
+    <!-- 头部 -->
+    <el-container>
 
-      <!-- 弹出框组件 -->
-      <el-dialog
-        title="个人缴费"
-        :visible.sync="dialogVisible"
-        width="30%"
-        :before-close="handleClose">
-        <div>
-          <!-- 在这里加入你的图片 -->
-          <img src="../../assets/微信收款.png" alt="描述文字" style="width: 100%; height: auto;">
-        </div>
-        <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消支付</el-button>
-        <el-button type="primary" @click="afterPay">已支付</el-button>
-      </span>
-      </el-dialog>
-    </el-card>
-  </div>
+      <el-header style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <div style="font-size: 20px; font-weight: bold;">个人报考</div>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <i class="el-icon-user"></i> 学生：{{Stu.stuName}} <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>查看</el-dropdown-item>
+            <el-dropdown-item>新增</el-dropdown-item>
+            <el-dropdown-item>删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
+      <br><br><br><br><br>
+      <div class="el-card-outside">
+        <!--      报考学校信息栏目-->
+        <el-card class="el-card-aimSchool">
+          <el-form size="large" label-width="auto">
+            <span>个人报考<br><br></span>
+            <el-form-item label="考试科目/考场:">
+              <el-cascader v-model="selectedCourseSchool" :options="examClass" @change="selectExamClass"/>
+              <el-button type="success" :disabled="comfirmDisabled" @click="confirmCourseSchool">确认科目/考场</el-button>
+            </el-form-item>
+            <el-form-item label="进度流程:">
+              <el-steps style="max-width: 1200px" finish-status="success" :active="courseStatus.step" align-center>
+                <el-step title="开始报名" description=""/>
+                <el-step title="选择科目/考场" description=""/>
+                <el-step title="个 人 缴 费 / 完 成 报 名" description=""/>
+    <!--            <el-step title="确认报名" description=""/>-->
+                <el-step title="可打印准考证" description=""/>
+                <el-step title="考试结束" description=""/>
+              </el-steps>
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="dialogVisible = true" :disabled="payDisabled" type="danger">个人缴费</el-button>
+    <!--          <el-button type="success">打印座位通知单</el-button>-->
+              <el-button @click="filePrint" type="success">打印考生准考证</el-button>
+    <!--          <el-button @click="enrollClick" type="danger">报名</el-button>-->
+            </el-form-item>
+          </el-form>
+
+          <!-- 弹出框组件 -->
+          <el-dialog
+            title="个人缴费"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+            <div>
+              <!-- 在这里加入你的图片 -->
+              <img src="./微信收款.png" alt="描述文字" style="width: 100%; height: auto;">
+            </div>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消支付</el-button>
+            <el-button type="primary" @click="afterPay">已支付</el-button>
+          </span>
+          </el-dialog>
+        </el-card>
+      </div>
+
+    </el-container>
+  </el-container>
 </template>
 
 <script>

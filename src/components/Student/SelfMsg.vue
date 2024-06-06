@@ -1,57 +1,77 @@
+<!-- 个人信息 -->
 <template>
+  <el-container style="height: 100vh;">
+    <!-- 头部 -->
+    <el-container>
 
-  <el-container class="el-card-outside">
-    <br>
-    <!--      个人信息栏-->
-    <el-card class="el-card-selfMsg">
-      <el-form :inline="true" :model="Stu" label-width="auto">
-        <span>个人信息<br><br></span>
-        <el-form-item label="姓名:">
-          <el-input placeholder="" v-model="Stu.stuName" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="身份证号:">
-          <el-input placeholder="" v-model="Stu.idCard" :disabled="true"></el-input>
-        </el-form-item>
-        <el-form-item label="所属院校:">
-          <el-input placeholder="" v-model="Stu.schoolName" :disabled="true"></el-input>
-        </el-form-item>
-        <br>
-        <el-form-item label="人脸识别：">
-          <el-button @click="faceRegisterOpen">点击注册</el-button>
-        </el-form-item>
+      <el-header style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+        <div style="font-size: 20px; font-weight: bold;">个人信息</div>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <i class="el-icon-user"></i> 学生：{{Stu.stuName}} <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>查看</el-dropdown-item>
+            <el-dropdown-item>新增</el-dropdown-item>
+            <el-dropdown-item>删除</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-header>
 
-      </el-form>
-      <br><br>
-      <span style="display: flex; ">已报考科目</span><br>
-      <el-table :data="allCourseStatus" style="width: 100%">
-        <el-table-column prop="courseName" label="科目" width="280"></el-table-column>
-        <el-table-column prop="schoolName" label="考试学校" width="280"></el-table-column>
-        <el-table-column prop="step" label="报名进度"></el-table-column>
-      </el-table>
-    </el-card>
-    <br>
+      <br><br><br>
+      <div class="el-card-outside">
+        <!--      个人信息栏-->
+        <el-card class="el-card-selfMsg">
 
-    <!-- 弹出框组件 -->
-    <el-dialog
-      title="人脸识别注册"
-      :visible.sync="dialogVisible"
-      :before-close="handleClose"
-      width="50%">
-      <div>
-        <video ref="video" width="0" height="0" autoplay></video>
-        <canvas ref="canvas" v-show="cameraStatus" width="480" height="360" style="display: flex;margin-bottom: 40px; margin-left: 50px;"></canvas>
+          <el-form :inline="true" :model="Stu" label-width="auto">
+            <span>个人信息<br><br></span>
+            <el-form-item label="姓名:">
+              <el-input placeholder="" v-model="Stu.stuName" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="身份证号:">
+              <el-input placeholder="" v-model="Stu.idCard" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="所属院校:">
+              <el-input placeholder="" v-model="Stu.schoolName" :disabled="true"></el-input>
+            </el-form-item>
+            <el-form-item label="人脸识别：">
+              <el-button @click="faceRegisterOpen">点击注册</el-button>
+            </el-form-item>
+          </el-form>
+
+          <span style="display: flex; ">已报考科目</span><br>
+          <el-table :data="allCourseStatus" style="width: 100%">
+            <el-table-column prop="courseName" label="科目" width="320" align="center"></el-table-column>
+            <el-table-column prop="schoolName" label="考试学校" width="300" align="center"></el-table-column>
+            <el-table-column prop="step" label="报名进度" width="310" align="center"></el-table-column>
+          </el-table>
+
+        </el-card>
+
       </div>
-      <div style="display: flex; align-items: center; align-content: center">
-        <el-button type="primary" v-show="cognitionStatus" @click="startCamera">开始注册</el-button><br>
-        <el-button type="danger" v-show="!cognitionStatus" @click="stopCamera">停止识别</el-button>
-        <el-button type="primary" v-show="!cognitionStatus" @click="faceRegister">确认上传</el-button>
-      </div>
-    </el-dialog>
+      <!-- 弹出框组件 -->
+      <el-dialog
+        title="人脸识别注册"
+        :visible.sync="dialogVisible"
+        :before-close="handleClose"
+        width="50%">
+        <div>
+          <video ref="video" width="0" height="0" autoplay></video>
+          <canvas ref="canvas" v-show="cameraStatus" width="480" height="360" style="display: flex;margin-bottom: 40px; margin-left: 50px;"></canvas>
+        </div>
+        <div style="display: flex; align-items: center; align-content: center">
+          <el-button type="primary" v-show="cognitionStatus" @click="startCamera">开始注册</el-button><br>
+          <el-button type="danger" v-show="!cognitionStatus" @click="stopCamera">停止识别</el-button>
+          <el-button type="primary" v-show="!cognitionStatus" @click="faceRegister">确认上传</el-button>
+        </div>
+      </el-dialog>
+
+    </el-container>
+
+
   </el-container>
-
-
-
 </template>
+
 
 <script>
 export default {

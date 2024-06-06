@@ -20,41 +20,22 @@ export default new Router({
       component: ()=>import('@/components/UserLogin')
     },
     {
-      //管理员主页
-      path: '/AdminHomePage',
-      name: 'AdminHomePage',
-      component: ()=>import('@/components/HomePage/AdminHomePage')
+      //学生主页
+      path: '/StudentHomePage',
+      name: 'StudentHomePage',
+      component: ()=>import('@/components/HomePage/StudentHomePage')
     },
     {
-      //学校主页
+      //院校主页
       path: '/SchoolHomePage',
       name: 'SchoolHomePage',
       component: ()=>import('@/components/HomePage/SchoolHomePage')
     },
     {
-      //个人主页
-      path: '/StuHomePage',
-      name: 'StuHomePage',
-      component: ()=>import('@/components/HomePage/StuHomePage')
+      //管理员主页
+      path: '/AdminHomePage',
+      name: 'AdminHomePage',
+      component: ()=>import('@/components/HomePage/AdminHomePage')
     },
-    {
-      //个人信息
-      path: '/StuHomePage/SelfMsg',
-      name: 'StuSelfMsg',
-      component: ()=>import('@/components/StuMainPanel/SelfMsg')
-    },
-    {
-      //个人报考
-      path: '/StuHomePage/SelfEnroll',
-      name: 'selfEnroll',
-      component: ()=>import('@/components/StuMainPanel/SelfEnroll')
-    },
-    {
-      //成绩查看
-      path: '/StuHomePage/ExamScore',
-      name: 'ExamScore',
-      component: ()=>import('@/components/StuMainPanel/ExamScore')
-    },
-
   ]
 })

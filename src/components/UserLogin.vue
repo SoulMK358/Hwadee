@@ -222,7 +222,7 @@ export default {
               //保存当前用户的个人相关信息，以便后续使用
               localStorage.setItem("currentUser",JSON.stringify(res.data.data))
               setTimeout(function (){
-                _this.$router.push("/StuHomePage")
+                _this.$router.push("/StudentHomePage")
               },800)
             }
           })
@@ -469,7 +469,7 @@ export default {
             localStorage.setItem("currentUser",JSON.stringify(res.data.data))
             _this.stopCamera()
             setTimeout(function (){
-              _this.$router.push("/StuHomePage")
+              _this.$router.push("/StudentHomePage")
             },800)
           }
         })

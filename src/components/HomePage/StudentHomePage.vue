@@ -1,0 +1,86 @@
+<template>
+  <div>
+    <el-container style="height: 95vh;">
+      <!-- 左侧菜单栏 -->
+      <el-aside width="200px" style="background-color: rgb(18, 90, 160); color: white;">
+        <el-menu :default-active="activeIndex" @select="handleSelect" class="el-menu-vertical-demo" style="background-color: rgb(18, 90, 160); color: white;">
+          <el-menu-item index="0" style="color: white; text-align: center;">
+            <i class="el-icon-menu"></i>
+          </el-menu-item>
+         <el-menu-item index="1" style="color: white;">
+            <i class="el-icon-document"></i> <span>个人信息</span>
+          </el-menu-item>
+          <el-menu-item index="2" style="color: white;">
+            <i class="el-icon-edit"></i> <span>个人报考</span>
+          </el-menu-item>
+          <el-menu-item index="3" style="color: white;">
+            <i class="el-icon-location"></i> <span>考试成绩</span>
+          </el-menu-item>
+          <el-menu-item @click="exit" style="color: white;">
+            <i class="el-icon-close"></i> <span>退出系统</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+
+      <!-- 右侧内容区域 -->
+      <el-container>
+        <el-main>
+          <component :is="currentComponent"></component>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script>
+
+import SelfMsgVue from '../Student/SelfMsg.vue';
+import SelfEnrollVue from '../Student/SelfEnroll.vue';
+import ExamScoreVue from '../Student/ExamScore.vue';
+
+export default {
+  name: "StudentHomePage",
+  data() {
+    return {
+      activeIndex: '1',
+      currentComponent: 'SelfMsgVue'
+    };
+  },
+  components: {
+    SelfMsgVue,
+    SelfEnrollVue,
+    ExamScoreVue,
+  },
+  methods: {
+    handleSelect(key) {
+      if (key == '1') {
+        this.currentComponent = 'SelfMsgVue';
+      } else if (key == '2') {
+        this.currentComponent = 'SelfEnrollVue';
+      } else if (key == '3') {
+        this.currentComponent = 'ExamScoreVue';
+      }
+    },
+
+    exit(){
+      var _this = this
+      this.$message({
+        type:"success",
+        message:"正在退出..."
+      })
+      setTimeout(function (){
+        localStorage.removeItem("currentUser")
+        _this.$router.push("/")
+      },500)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 100%;
+  min-height: 400px;
+  border-right: none;
+}
+</style>
