@@ -142,7 +142,7 @@ export default {
           //弹窗显示后端返回的信息（成功、失败原因）
           _this.$message({
             type: res.data.code == 200 ? "success" : "error",
-            message: res.data.data
+            message: res.data.message
           })
           if (res.data.code == 200){
             _this.form = {}

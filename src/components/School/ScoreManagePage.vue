@@ -5,10 +5,9 @@
       style="background-color: #f5f7fa; display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
       <div style="font-size: 20px; font-weight: bold;">成绩管理</div>
       <el-dropdown>
-          <span class="el-dropdown-link">
-            <i class="el-icon-user"></i> 你好，{{ groupInfoForm.schoolerAccount }} <i
-            class="el-icon-arrow-down el-icon--right"></i>
-          </span>
+        <span class="el-dropdown-link">
+          <i class="el-icon-user"></i> 你好，{{ groupInfoForm.schoolerAccount }} <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>查看</el-dropdown-item>
           <el-dropdown-item>新增</el-dropdown-item>
@@ -21,19 +20,15 @@
       <br><br>
       <el-card>
         <el-button type="primary" @click="getStuMarkList">刷新列表</el-button>
-        <div style="display: flex; justify-content: center; align-items: center;padding-left: 80px">
-
-          <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 100%;">
-
-            <el-table-column prop="idCard" label="身份证号" width="250"></el-table-column>
-            <el-table-column prop="stuName" label="姓名" width="150"></el-table-column>
-            <el-table-column prop="schoolName" label="所属院校" width="150"></el-table-column>
-            <el-table-column prop="courseName" label="科目" width="150"></el-table-column>
-            <el-table-column prop="stuMark" label="分数" width="150"></el-table-column>
-            <el-table-column label="操作" width="150" align="center">
+        <div style="display: flex; justify-content: center; align-items: center; padding: 0;">
+          <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%; text-align: center;">
+            <el-table-column prop="idCard" label="身份证号" width="250" align="center"></el-table-column>
+            <el-table-column prop="stuName" label="姓名" align="center"></el-table-column>
+            <el-table-column prop="schoolName" label="所属院校" align="center"></el-table-column>
+            <el-table-column prop="courseName" label="科目" align="center"></el-table-column>
+            <el-table-column prop="stuMark" label="分数" align="center"></el-table-column>
+            <el-table-column label="操作" width="170"  align="center">
               <template slot-scope="scope">
-                <!--                  <el-button size="mini" type="success" @click="editRecord(scope.row)" style="margin-right: 10px;">编辑</el-button>-->
-                <!--                <el-button size="mini" type="danger" @click="deleteRecord(scope.row)">删除</el-button>-->
                 <el-button size="mini" type="primary" @click="updateRecord(scope.row)">评分</el-button>
               </template>
             </el-table-column>
@@ -41,19 +36,19 @@
         </div>
         <el-pagination
           background
-          layout="prev, pager, next,jumper, ->, total"
+          layout="prev, pager, next, jumper, ->, total"
           :total="tableData.length"
           @current-change="handleCurrentChange"
           :current-page="currentPage"
           :page-size="pageSize"
-          style="text-align: center">
+          style="text-align: center; margin-top: 20px;">
         </el-pagination>
       </el-card>
     </el-main>
 
     <!-- 弹出框组件 -->
     <el-dialog
-      title="123"
+      title="成绩录入"
       :visible.sync="dialogVisible"
       width="50%">
       <el-form :model="singleStuScore" label-width="auto">
@@ -73,7 +68,7 @@
           <el-input v-model="singleStuScore.stuMark"></el-input>
         </el-form-item>
       </el-form>
-      <div style="display: flex; align-items: center; align-content: center">
+      <div style="display: flex; justify-content: center; align-items: center;">
         <el-button type="primary" @click="confirmModify">确认分数</el-button>
       </div>
     </el-dialog>
@@ -197,10 +192,7 @@ export default {
           .catch(() => {
           });
       }
-
-
     }
-
   },
   mounted() {
     //从localStorage读取相关信息
@@ -212,5 +204,19 @@ export default {
 </script>
 
 <style scoped>
-
+.el-header {
+  background-color: #f5f7fa;
+  padding: 20px;
+}
+.el-aside {
+  background-color: rgb(18, 90, 160);
+  color: white;
+}
+.el-menu-item {
+  color: white;
+}
+.el-dropdown-link {
+  cursor: pointer;
+  color: #333;
+}
 </style>
